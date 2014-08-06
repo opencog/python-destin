@@ -1,0 +1,25 @@
+TODO List:
+-> Enable running for gray and color images
+-> Check; It is going to work for new learning algorithms
+-> Download Features Learned by steven's algorithm and test the accuracy
+_________________ Approach #1
+-> Implement Uniform DeSTIN by replacing nodes of layer N by a typical node
+    -> the "Typical-Node, TN" will have to do learning over every possible input from the N-1th layer
+    -> if N=1, the typical layer#1 node will run over every possible overlapping 4by4 image patch, then ...
+    -> the centroids learned by the TN will be shared by every node of the layer (Uniform DeSTIN Achieved)
+    -> (if the node by chance suffered from improper initialization or so, a problem might happen)
+_________________ Approach #2
+-> Iterate over every possible shifted versions of the image and store the beliefs and average them
+-> Requires a sound way of taking uniform centroids for the layer
+-> Trains the whole network over a single image
+_________________ Approach #3
+For Every Image example
+    -> Train Layer1 TN as in approach#1
+    -> assign layer#1 nodes centroids learned from TN
+    -> calculate beliefs of the layer#1 nodes
+    -> then, do the same thing for layer#2 and so on
+
+
+
+-> Revise the correctness of the implementation, readability, modularity
+->
