@@ -22,6 +22,7 @@ Installation Instructions:
 -> Edit loadData.py to modify the location of the Cifar directory/ where you placed the downloaded cifar dataset
 -> run testDestin.py
 _______________________________ Nessesary Libraries
+See http://deeplearning.net/software/theano/install_ubuntu.html#install-ubuntu for installing it on Ubuntu
 You need to have python>2.73, Numpy and Scipy libraries installed
 For the future versions theano will also be necessary so installing theano is optional at this time
 
