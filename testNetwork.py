@@ -1,6 +1,6 @@
 import numpy.random as rng
 import numpy as np
-
+import theano
 from Network import *
 from Node import *
 
