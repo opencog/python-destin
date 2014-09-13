@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'teddy'
-import scipy.io as io
-
 from Layer import *
-
+import scipy.io as io
 # io.savemat(FileName,Dict,True)
 # TODO: get ridoff the sequential requirements like first feed the layer an input the you can initialize it
 
@@ -48,11 +46,7 @@ class Network():
                         self.NetworkBelief['Belief'] = np.hstack((np.array(self.NetworkBelief['Belief']),
                                                               np.array(self.Layers[0][i].Nodes[j][k].Belief).ravel()))
 
-    def dumpBelief(self, NumOfImages):
-        TotalBeliefLen = len(np.array(self.NetworkBelief).ravel())
-        SingleBeliefLen = TotalBeliefLen/NumOfImages
-        print np.array(self.NetworkBelief).ravel()
-        Belief = np.array(self.NetworkBelief).reshape(NumOfImages,SingleBeliefLen)
-        io.savemat(self.BeliefFileName, Belief)
+    def dumpBelief(self):
+        io.savemat(self.BeliefFileName, self.NetworkBelief)
     def cleanBeliefExporter(self):
         self.NetworkBelief['Belief'] = np.array([])

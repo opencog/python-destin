@@ -1,0 +1,17 @@
+cifarOld.py
+Cifar/*
+testFiles/*
+test/*
+train/*
+#.gitignore
+Node.pyc
+README.txt~
+loadData.pyc
+TODOIST.txt
+TODOIST.txt~
+*.mat
+octave-core
+ClusteringTheano.py
+testSupervisedClustering.py
+*.pyc
+octave-core

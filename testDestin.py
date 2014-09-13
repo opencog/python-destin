@@ -1,11 +1,12 @@
 __author__ = 'teddy'
 from Network import *
+import numpy.random as rng
 from loadData import *
 print("Uniform DeSTIN")
-
 """
 Here I don't move the image, I rather let the nodes move around the image
 This is to make use of the methods from the previous UniformDeSTIN version
+
 """
 # *****Define Parameters for the Network and Nodes
 
@@ -41,7 +42,7 @@ for I in range(data.shape[0]):# For Every image in the data set
             DESTIN.Layers[0][L].trainTypicalNode(DESTIN.Layers[0][L-1].Nodes,[2,2])
         DESTIN.Layers[0][L].shareCentroids()
     DESTIN.updateBeliefExporter()
-DESTIN.dumpBelief(2)
+DESTIN.dumpBelief()
 DESTIN.cleanBeliefExporter()#Get rid-off accumulated training beliefs
 print("Testing Started")
 NetworkMode = False
@@ -61,4 +62,4 @@ for I in range(data.shape[0]):# For Every image in the data set
             DESTIN.Layers[0][L].loadInput(DESTIN.Layers[0][L-1].Nodes,[2,2])
         DESTIN.Layers[0][L].doLayerLearning()# Only belief calculation NoTraining
     DESTIN.updateBeliefExporter()
-DESTIN.dumpBelief(2)
+DESTIN.dumpBelief()
