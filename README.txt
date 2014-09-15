@@ -26,17 +26,23 @@ See http://deeplearning.net/software/theano/install_ubuntu.html#install-ubuntu f
 You need to have python>2.73, Numpy and Scipy libraries installed
 For the future versions theano will also be necessary so installing theano is optional at this time
 
-Outlines for the Development of DeSTIN in robust Spatio-Temporal Inference Engine
+Testing
+Inorder to run the testWithSVM.py script and evaluate the classification accuracy on the cifar data set 
+install the scikit-learn machine learning toolkit.
+see installation instructions at http://scikit-learn.org/stable/install.html
+
+
+Outlines for the Development of DeSTIN as a robust Spatio-Temporal Inference Engine
 Taking into consideration points listed @: http://wiki.opencog.org/w/New_DeSTIN_Redesign_Proposal	
 We will have explicit branches for A to D.
 
-A) pure DeSTIN Framework: flexible enough to support different learning algorithms
-		(Done)
-B) Implemeting Online-NonNegative Sparse AutoEncoder in theano
-		(Started)
-C) Implemeting Stable Incremental K Means Clustering in theano
+A) pure DeSTIN Framework: flexible enough to support different learning algorithms (Done)
+		
+B) Implemeting Online-NonNegative Sparse AutoEncoder in theano/or python (Done)
+		
+C) Implemeting Stable Incremental K Means Clustering in theano (In Progress)
 
-D) a LeNet style CNN built using the general-purpose CNN layer 
+D) a LeNet style CNN built using the general-purpose CNN layer ()
 	(The theory may require revision)
 	(How to make sense of the Complex and Simple cell like filters simulated in 	the CNN?)
 	(Pooling is also an issue.....)

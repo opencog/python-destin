@@ -28,7 +28,7 @@ t = time()
 #ret = load_cifar()
 #DESTIN.network_init_whitening(ret['patch_mean'], ret['patch_std'], ret['whiten_mat'])
 for I in range(data.shape[0]):
-    if I%100 == 0:
+    if I%1 == 0:
         print("Training Iteration Number %d" % I)
     for L in range(DESTIN.NumberOfLayers):
         if L == 0:
