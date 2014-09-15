@@ -40,7 +40,7 @@ for I in range(data.shape[0]):
             DESTIN.Layers[0][L].loadInput(DESTIN.Layers[0][L-1].Nodes,[2,2])
             DESTIN.Layers[0][L].doLayerLearning()
     DESTIN.updateBeliefExporter()
-    if I in range(999,50999,1000):
+    if I in range(999,50999,500):
         Name = 'train/' + str(I+1) + '.txt'
         FID = open(Name,'w')
         pickle.dump(np.array(DESTIN.NetworkBelief['Belief']),FID)
@@ -67,7 +67,7 @@ for I in range(data.shape[0]):# For Every image in the data set
             DESTIN.Layers[0][L].loadInput(DESTIN.Layers[0][L-1].Nodes,[2,2])
             DESTIN.Layers[0][L].doLayerLearning()
     DESTIN.updateBeliefExporter()
-    if I in range(999,10999,1000):
+    if I in range(999,10999,500):
         Name = 'test/' + str(I+1) + '.txt'
         FID = open(Name,'w')
         pickle.dump(DESTIN.NetworkBelief['Belief'],FID)
