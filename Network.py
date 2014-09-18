@@ -32,7 +32,7 @@ class Network():
     def setLowestLayer(self,LowestLayer):
         self.LowestLayer = LowestLayer
 
-    def initLayer(self, LayerNum):  # TODO make sure lower layer is initialized (or trained at least once)
+    def initLayer(self, LayerNum):
         self.Layers[0][LayerNum].initLayerLearningParams(self.AlgorithmChoice, self.AlgorithmParams)
 
     def trainLayer(self, LayerNum):

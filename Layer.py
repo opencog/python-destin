@@ -56,7 +56,7 @@ class Layer:
         for I in range(len(self.Nodes)):
             for J in range(len(self.Nodes[0])):
                 self.Nodes[I][J].doNodeLearning(self.Mode)
-    def trainTypicalNode(self,Input,windowSize):
+    def trainTypicalNode(self,Input,windowSize,AlgorithmChoice):
         TN = self.Nodes[0][0]
         [H,V] = windowSize
         if self.LayerNumber == 0:
@@ -77,10 +77,10 @@ class Layer:
                             InputTemp = np.append(InputTemp, np.array(np.ravel(Input[K][L].Belief)))
                             # Combine the Beliefs of the Nodes passed
                     TN.loadInput(np.ravel(InputTemp))
-                    TN.doNodeLearning(self.Nodes)
+                    TN.doNodeLearning(self.Mode)
         self.Nodes[0][0] = TN
 
-    def shareCentroids(self):
+    def shareLearnedParameters(self):
         for I in range(len(self.Nodes)):
             for J in range(len(self.Nodes[0])):
                 self.Nodes[I][J] = self.Nodes[0][0]

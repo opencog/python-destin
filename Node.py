@@ -5,7 +5,7 @@ Created on Tue Jul  2 2014
 """
 
 from Clustering import *
-
+from AutoEncoder import *
 class Node:
     def __init__(self, LayerNumber, NodePos, cifarstat={'patch_mean':[],'patch_std':[],'whiten_mat':[]}):
         self.LayerNumber = LayerNumber
@@ -28,7 +28,9 @@ class Node:
             self.LearningAlgorithm = Clustering(AlgParams['mr'], AlgParams['vr'], AlgParams['sr'], InputWidth,
                                                 AlgParams['NumCentsPerLayer'][self.LayerNumber], self.NodePosition)
         else:
-            print('Only Incremental Clustering Exists')
+            self.AlgorithmChoice = AlgorithmChoice
+            self.LearningAlgorithm = NNSAE(AlgParams[self.LayerNumber])
+            #print('Only Incremental Clustering Exists')
 
     def loadInput(self, In):
         if self.LayerNumber == 0:
@@ -42,4 +44,27 @@ class Node:
             self.LearningAlgorithm.update_node(self.Input, Mode)
             self.Belief = self.LearningAlgorithm.belief
         else:
-            print("Only Incremental Clustering Algorithm Exists")
+            self.LearningAlgorithm.train(self.Input)
+            Activations = np.dot(self.LearningAlgorithm.W, np.transpose(self.Input))
+            Activations = Activations/sum(sum(Activations))
+            self.Activation = Activations
+            #m = np.mean(np.mean(Activations,1))
+            for K in range(Activations.shape[0]):
+                self.Belief[K,0] = max(0, (Activations[K,0] - 0.025))
+            #print("Only Incremental Clustering Algorithm Exists")
+
+            """
+
+    def calcuateBelief(self, Input):
+        self.loadInputToNodes(Input, [4,4])
+        for I in range(len(self.Nodes)):
+            for J in range(len(self.Nodes[0])):
+                W = np.transpose(self.NNSAE.W)
+                Image = returnNodeInput(Input, [I*4, J*4], [4,4], 'Adjacent', 'Color')
+                Activations = np.dot(W, np.transpose(Image))
+                Activations = Activations/sum(sum(Activations))
+                self.Nodes[I][J].Activation = Activations
+                m = np.mean(np.mean(Activations,1))
+                for K in range(Activations.shape[0]):
+                        self.Nodes[I][J].Belief[K,0] = max(0, (Activations[K,0] - 0.025))
+                print self.Nodes[0][0].Belief"""

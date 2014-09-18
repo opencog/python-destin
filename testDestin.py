@@ -4,7 +4,7 @@ from loadData import *
 print("Uniform DeSTIN")
 
 """
-Here I don't move the image, I rather let the nodes move around the image
+Here I don't move the image, I rather let a typical node move around the image
 This is to make use of the methods from the previous UniformDeSTIN version
 """
 # *****Define Parameters for the Network and Nodes
@@ -20,9 +20,13 @@ NetworkMode = True # training is set true
 AlgorithmChoice = 'Clustering'
 AlgParams = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [], 'CENTS': [], 'node_id': [],
              'NumCentsPerLayer': NumCentsPerLayer}
+AlgorithmChoice = 'AutoEncoder'
+InpSize = 48
+HidSize = 100
+AlgParams = [[InpSize,HidSize],[4*HidSize,HidSize],[4*HidSize,HidSize],[4*HidSize,HidSize]]
 #Declare a Network Object
 DESTIN = Network(numLayers, AlgorithmChoice, AlgParams, NumNodesPerLayer, PatchMode, ImageType)
-DESTIN.setMode(NetworkMode) #training or not
+DESTIN.setMode(NetworkMode)
 DESTIN.setLowestLayer(0)
 #Load Data
 [data, labels] = loadCifar(10) # loads cifar_data_batch_1
@@ -36,10 +40,15 @@ for I in range(data.shape[0]):# For Every image in the data set
     for L in range(DESTIN.NumberOfLayers):
         if L == 0:
             img = data[I][:].reshape(32,32,3)
-            DESTIN.Layers[0][L].trainTypicalNode(img,[4,4])
+            DESTIN.Layers[0][L].trainTypicalNode(img,[4,4],AlgorithmChoice)
+            DESTIN.Layers[0][L].shareLearnedParameters()#This is equivalent to sharing centroids or kernels
+            DESTIN.Layers[0][L].loadInput(img,[4,4])
+            DESTIN.Layers[0][L].doLayerLearning()# Calculates belief for every Node using the shared parameters and inputs of the Nodes
         else:
-            DESTIN.Layers[0][L].trainTypicalNode(DESTIN.Layers[0][L-1].Nodes,[2,2])
-        DESTIN.Layers[0][L].shareCentroids()
+            DESTIN.Layers[0][L].trainTypicalNode(DESTIN.Layers[0][L-1].Nodes,[2,2],AlgorithmChoice)
+            DESTIN.Layers[0][L].shareLearnedParameters()
+            DESTIN.Layers[0][L].loadInput(img,[4,4])
+            DESTIN.Layers[0][L].doLayerLearning()
     DESTIN.updateBeliefExporter()
 DESTIN.dumpBelief(2)
 DESTIN.cleanBeliefExporter()#Get rid-off accumulated training beliefs
