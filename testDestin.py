@@ -1,7 +1,6 @@
 __author__ = 'teddy'
 from Network import *
 from loadData import *
-print("Uniform DeSTIN")
 
 """
 Here I don't move the image, I rather let a typical node move around the image
@@ -11,15 +10,24 @@ This is to make use of the methods from the previous UniformDeSTIN version
 
 #Network Params
 numLayers = 4
-NumNodesPerLayer = [[8, 8], [4, 4], [2, 2], [1, 1]]
-NumCentsPerLayer = [25, 25, 25, 25]
 PatchMode = 'Adjacent'  #
 ImageType = 'Color'
 NetworkMode = True # training is set true
+
 #For a Node: specify Your Algorithm Choice and Corresponding parameters
+'''
+#************************************************************************Incremental Clustering
+NumNodesPerLayer = [[8, 8], [4, 4], [2, 2], [1, 1]]
+NumCentsPerLayer = [25, 25, 25, 25]
+print "Uniform DeSTIN with Clustering"
 AlgorithmChoice = 'Clustering'
 AlgParams = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [], 'CENTS': [], 'node_id': [],
              'NumCentsPerLayer': NumCentsPerLayer}
+'''
+#           *******************************************************Auto Encoder
+print "Uniform DeSTIN with AutoEncoders"
+NumNodesPerLayer = [[8, 8], [4, 4], [2, 2], [1, 1]]
+NumCentsPerLayer = [25, 25, 25, 25]
 AlgorithmChoice = 'AutoEncoder'
 InpSize = 48
 HidSize = 100
@@ -29,13 +37,13 @@ DESTIN = Network(numLayers, AlgorithmChoice, AlgParams, NumNodesPerLayer, PatchM
 DESTIN.setMode(NetworkMode)
 DESTIN.setLowestLayer(0)
 #Load Data
-[data, labels] = loadCifar(10) # loads cifar_data_batch_1
+[data, labels] = loadCifar(1) # loads cifar_data_batch_1
 #data = np.random.rand(5,32*32*3)
 #Initialize Network; there is is also a layer-wise initialization option
 DESTIN.initNetwork()
 #data.shape[0]
 for I in range(data.shape[0]):# For Every image in the data set
-    if I%1000 == 0:
+    if I%1 == 0:
         print("Training Iteration Number %d" % I)
     for L in range(DESTIN.NumberOfLayers):
         if L == 0:
@@ -50,6 +58,15 @@ for I in range(data.shape[0]):# For Every image in the data set
             DESTIN.Layers[0][L].loadInput(img,[4,4])
             DESTIN.Layers[0][L].doLayerLearning()
     DESTIN.updateBeliefExporter()
+'''
+    if I in range(499,50999,500):
+        Name = 'train/' + str(I+1) + '.txt'
+        FID = open(Name,'w')
+        pickle.dump(np.array(myLayer.LayerBeliefs['Belief']), FID)
+        FID.close()
+        myLayer.cleanBeliefExporter()#Get rid-off accumulated training beliefs
+'''
+
 DESTIN.dumpBelief(2)
 DESTIN.cleanBeliefExporter()#Get rid-off accumulated training beliefs
 print("Testing Started")

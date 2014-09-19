@@ -3,7 +3,7 @@ from numpy import *
 import cPickle
 from random import randrange
 import numpy as np
-cifar_dir = '/home/teddy/Desktop/PythonDeSTIN/Cifar/'
+cifar_dir = '/home/teddy/Desktop/Cifar/'
 #cifar_dir = '/home/eskender/Destin/cifar-10-batches-py/'
 # Contains loading cifar batches and
 # feeding input to lower layer nodes
@@ -16,9 +16,6 @@ def read_cifar_file(fn):
 
 def load_cifar(psz=4):
     # file strings
-    # /home/teddy/Desktop/PyDeSTIN/cifar-10-batches-py
-    #cifar_dir = '/eskender@ih1:~/Destin/cifar-10-batches-py/'
-    #cifar_dir = '/home/syoung22/Data/cifar-10-batches-py/'
     filenames = ['data_batch_1', 'data_batch_2',
                  'data_batch_3', 'data_batch_4',
                  'data_batch_5', 'test_batch']

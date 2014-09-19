@@ -28,8 +28,9 @@ class Node:
             self.LearningAlgorithm = Clustering(AlgParams['mr'], AlgParams['vr'], AlgParams['sr'], InputWidth,
                                                 AlgParams['NumCentsPerLayer'][self.LayerNumber], self.NodePosition)
         else:
+            self.Belief = np.ones((AlgParams[self.LayerNumber][1]))
             self.AlgorithmChoice = AlgorithmChoice
-            self.LearningAlgorithm = NNSAE(AlgParams[self.LayerNumber])
+            self.LearningAlgorithm = NNSAE(AlgParams[self.LayerNumber][0],AlgParams[self.LayerNumber][1])
             #print('Only Incremental Clustering Exists')
 
     def loadInput(self, In):
@@ -45,12 +46,19 @@ class Node:
             self.Belief = self.LearningAlgorithm.belief
         else:
             self.LearningAlgorithm.train(self.Input)
-            Activations = np.dot(self.LearningAlgorithm.W, np.transpose(self.Input))
+            #print self.LearningAlgorithm.W.shape
+            #print (np.transpose(self.Input)).shape
+            Activations = np.dot(np.transpose(self.LearningAlgorithm.W), np.transpose(self.Input))
+
             Activations = Activations/sum(sum(Activations))
-            self.Activation = Activations
+            #print Activations.shape
+            #exit(0)
+            #self.Activation = Activations
             #m = np.mean(np.mean(Activations,1))
+            Belief = self.Belief
             for K in range(Activations.shape[0]):
-                self.Belief[K,0] = max(0, (Activations[K,0] - 0.025))
+                Belief[K] = max(0.0, float((Activations[K] - 0.025)))
+            self.Belief = np.asarray(Belief)
             #print("Only Incremental Clustering Algorithm Exists")
 
             """
