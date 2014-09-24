@@ -8,6 +8,7 @@ from elementaryTheanoFunctions import *
 
 
 class Clustering:
+
     """
     This is the basic clustering class.
     """
@@ -33,12 +34,12 @@ class Clustering:
         srng = RandomStreams(seed=100)
         rv_u = srng.uniform((self.CENTS, self.DIMS))
         f = function([], rv_u)
-        self.mean = 2*f()
-        #print self.mean
+        self.mean = 2 * f()
+        # print self.mean
         var1 = T.dscalar('var1')
         var2 = T.dmatrix('var2')
         var3 = T.mul
-        self.var = theanoScaMatMul(0.001,np.ones((self.CENTS, self.DIMS)))
+        self.var = theanoScaMatMul(0.001, np.ones((self.CENTS, self.DIMS)))
         self.starv = np.ones((self.CENTS, 1))
         self.belief = np.zeros((1, self.CENTS))
         self.children = []
@@ -50,9 +51,8 @@ class Clustering:
         Update the node based on an input and training flag.
         """
 
-
-        #print self.DIMS
-        #print input.shape[0]
+        # print self.DIMS
+        # print input.shape[0]
         input = input.reshape(1, self.DIMS)
         self.process_input(input, TRAIN)
 
@@ -76,9 +76,9 @@ class Clustering:
         winning centroid.
         """
         var1 = T.dmatrix('var1')
-        SQRT = function([var1],[T.sqrt(var1)])
-        SUM = function([var1],[T.sum(var1,axis=1)])
-        euc = np.array(SQRT(SUM(sqdiff))).reshape(self.CENTS,1)
+        SQRT = function([var1], [T.sqrt(var1)])
+        SUM = function([var1], [T.sum(var1, axis=1)])
+        euc = np.array(SQRT(SUM(sqdiff))).reshape(self.CENTS, 1)
         self.update_winner(euc, diff)
 
     def update_winner(self, dist, diff):
@@ -93,7 +93,8 @@ class Clustering:
         # Find and Update Winner
         winner = np.argmin(dist)
         self.mean[winner, :] += self.MEANRATE * diff[winner, :]
-        vdiff = np.square(diff[winner, :]) - self.var[winner, :]  # this should be updated to use sqdiff
+        # this should be updated to use sqdiff
+        vdiff = np.square(diff[winner, :]) - self.var[winner, :]
         self.var[winner, :] += self.VARRATE * vdiff
         self.starv *= (1.0 - self.STARVRATE)
         self.starv[winner] += self.STARVRATE
@@ -103,15 +104,16 @@ class Clustering:
         Update belief state.
         """
         sqdiff = np.asarray(sqdiff)
-        normdist = theanoMatSum(theanoMatMatDiv(sqdiff,self.var),1)
-        #MatSum()
+        normdist = theanoMatSum(theanoMatMatDiv(sqdiff, self.var), 1)
+        # MatSum()
         chk = (normdist == 0)
         if any(chk):
             self.belief = np.zeros((1, self.CENTS))
             self.belief[chk] = 1.0
         else:
-            normdist = np.array(theanoScaVecDiv(1,normdist))
-            self.belief = np.array(theanoVecScaDiv(normdist,np.array(theanoVecSum(normdist)))).reshape(1,self.CENTS)
+            normdist = np.array(theanoScaVecDiv(1, normdist))
+            self.belief = np.array(theanoVecScaDiv(
+                normdist, np.array(theanoVecSum(normdist)))).reshape(1, self.CENTS)
 
     def init_whitening(self, mn=[], st=[], tr=[]):
         """

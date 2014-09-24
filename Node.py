@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#  -*- coding: utf-8 -*-
 """
 Created on Tue Jul  2 2014
 @author: teddy
@@ -6,12 +6,16 @@ Created on Tue Jul  2 2014
 
 from Clustering import *
 from AutoEncoder import *
+
+
 class Node:
-    def __init__(self, LayerNumber, NodePos, cifarstat={'patch_mean':[],'patch_std':[],'whiten_mat':[]}):
+
+    def __init__(self, LayerNumber, NodePos, cifarstat={'patch_mean': [], 'patch_std': [], 'whiten_mat': []}):
         self.LayerNumber = LayerNumber
         self.NodePosition = NodePos
         self.Belief = []
-        #cifarStat = load_cifar(4)# to be used for Normalization and Whitening Purposes
+        # cifarStat = load_cifar(4)#  to be used for Normalization and Whitening
+        #  Purposes
         self.patch_mean = cifarstat['patch_mean']
         self.patch_std = cifarstat['patch_std']
         self.v = cifarstat['whiten_mat']
@@ -20,23 +24,24 @@ class Node:
         self.AlgorithmChoice = AlgorithmChoice
         if AlgorithmChoice == 'Clustering':
             CentsPerLayer = AlgParams['NumCentsPerLayer']
-            # InputWidth = InputWidths[LayerNum]
+            #  InputWidth = InputWidths[LayerNum]
             if self.LayerNumber == 0:
                 InputWidth = 48
             else:
-                InputWidth = CentsPerLayer[self.LayerNumber-1] * 4
+                InputWidth = CentsPerLayer[self.LayerNumber - 1] * 4
             self.LearningAlgorithm = Clustering(AlgParams['mr'], AlgParams['vr'], AlgParams['sr'], InputWidth,
                                                 AlgParams['NumCentsPerLayer'][self.LayerNumber], self.NodePosition)
         else:
-            self.Belief = np.ones((AlgParams[self.LayerNumber][1]))
+            self.Belief = np.ones((AlgParams[self.LayerNumber][1], 1))
             self.AlgorithmChoice = AlgorithmChoice
-            self.LearningAlgorithm = NNSAE(AlgParams[self.LayerNumber][0],AlgParams[self.LayerNumber][1])
-            #print('Only Incremental Clustering Exists')
+            self.LearningAlgorithm = NNSAE(
+                AlgParams[self.LayerNumber][0], AlgParams[self.LayerNumber][1])
+            # print('Only Incremental Clustering Exists')
 
     def loadInput(self, In):
         if self.LayerNumber == 0:
             In = In - self.patch_mean
-            In = In/self.patch_std
+            In = In / self.patch_std
             In = In.dot(self.v)
         self.Input = In
 
@@ -45,21 +50,17 @@ class Node:
             self.LearningAlgorithm.update_node(self.Input, Mode)
             self.Belief = self.LearningAlgorithm.belief
         else:
+            print "Some Thing is Wrong with naming of Algorithms!"
             self.LearningAlgorithm.train(self.Input)
-            #print self.LearningAlgorithm.W.shape
-            #print (np.transpose(self.Input)).shape
-            Activations = np.dot(np.transpose(self.LearningAlgorithm.W), np.transpose(self.Input))
-
-            Activations = Activations/sum(sum(Activations))
-            #print Activations.shape
-            #exit(0)
-            #self.Activation = Activations
-            #m = np.mean(np.mean(Activations,1))
+            Activations = np.dot(
+                np.transpose(self.LearningAlgorithm.W), np.transpose(self.Input))
+            Activations = Activations / (np.sum(Activations))
             Belief = self.Belief
-            for K in range(Activations.shape[0]):
-                Belief[K] = max(0.0, float((Activations[K] - 0.025)))
+            Belief = np.maximum(Activations, 0)
+            self.Belief = Belief
+            #  for K in range(Activations.shape[0]):
+            #     Belief[K] = max(0.0, float((Activations[K] - 0.025)))
             self.Belief = np.asarray(Belief)
-            #print("Only Incremental Clustering Algorithm Exists")
 
             """
 
