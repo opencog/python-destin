@@ -30,13 +30,14 @@ def main():
     Row = 4
     Col = 4
     LayerNum = 2
-    NodeArray = [[Node(LayerNum, [i, j]) for j in range(Row)] for i in range(Col)]
+    NodeArray = [[Node(LayerNum, [i, j]) for j in range(Row)]
+                 for i in range(Col)]
     for I in range(Row):
         for J in range(Col):
             print(NodeArray[I][J].NodePosition)
             NodeArray[I][J].loadInput(D)
             myNode.initNodeLearningParams(AlgorithmChoice, AlgParams)
-            #myNode.doNodeLearning('training')
+            # myNode.doNodeLearning('training')
 
     print(type(myNode.Belief))
 

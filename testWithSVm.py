@@ -19,14 +19,14 @@ for I in range(2, 6):
     Name = cifarDir + '/data_batch_' + str(I) + '.mat'
     temp1 = io.loadmat(Name)
     temp2 = np.array(temp1['labels'])
-    #print temp2.shape
-    #print temp.shape
+    # print temp2.shape
+    # print temp.shape
     temp = np.vstack((temp, temp2))
 
 del temp1
 del temp2
 trainLabel = np.array(temp)
-#del temp, temp1, temp2
+# del temp, temp1, temp2
 temp = io.loadmat(cifarDir + '/test_batch' + '.mat')
 testLabel = np.array(temp['labels'])
 del temp
@@ -42,7 +42,7 @@ totLen = len(A)
 Width = int(totLen / 50000)
 A = A.reshape(50000, Width)
 
-#Training SVM
+# Training SVM
 SVM = svm.SVC(C=100, kernel='rbf')
 print "Fitting The SVM samples"
 trainLabel = np.squeeze(np.asarray(trainLabel).reshape(50000, 1))
@@ -50,9 +50,9 @@ SVM.fit(A, trainLabel)
 trainPred = SVM.predict(A)
 
 trainAccuracy = float(sum(trainPred == trainLabel)) / float(len(trainLabel))
-print("Training Accuracy = %f" % trainAccuracy*100)
+print("Training Accuracy = %f" % trainAccuracy * 100)
 del A
-#
+# 
 A2 = np.array([])
 for I in range(499, 10000, 500):
     Name = 'test/' + str(I + 1) + '.txt'
@@ -63,7 +63,7 @@ for I in range(499, 10000, 500):
 totLen = len(A2)
 Width = int(totLen / 10000)
 A2 = A2.reshape(10000, Width)
-#A = A[0:10000,1599:2124]
+# A = A[0:10000,1599:2124]
 del Temp
 print "Predicting Test samples"
 testPred = SVM.predict(A2)
@@ -73,7 +73,6 @@ del testData
 testLabel = np.array(testLabel).reshape(10000, 1)
 testLabel = np.squeeze(np.asarray(testLabel).reshape(10000, 1))
 testAccuracy = float(sum(testPred == testLabel)) / float(len(testLabel))
-#print testPred[0:400]
-#print testLabel[0:400]
-print("Training Accuracy = %f" % testAccuracy*100)
-
+# print testPred[0:400]
+# print testLabel[0:400]
+print("Training Accuracy = %f" % testAccuracy * 100)
