@@ -6,10 +6,7 @@ from theano import function
 
 
 class Clustering:
-<<<<<<< HEAD
 
-=======
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
     """
     This is the basic clustering class.
     """
@@ -35,11 +32,7 @@ class Clustering:
         srng = RandomStreams(seed=234)
         rv_u = srng.uniform((self.CENTS, self.DIMS))
         f = function([], rv_u)
-<<<<<<< HEAD
         self.mean = f()  # np.random.rand(self.CENTS, self.DIMS)
-=======
-        self.mean = f()#np.random.rand(self.CENTS, self.DIMS)
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
         print type(self.mean)
         self.var = 0.001 * np.ones((self.CENTS, self.DIMS))
         self.starv = np.ones((self.CENTS, 1))
@@ -92,12 +85,8 @@ class Clustering:
         # Find and Update Winner
         winner = np.argmin(dist)
         self.mean[winner, :] += self.MEANRATE * diff[winner, :]
-<<<<<<< HEAD
         # this should be updated to use sqdiff
         vdiff = np.square(diff[winner, :]) - self.var[winner, :]
-=======
-        vdiff = np.square(diff[winner, :]) - self.var[winner, :]  # this should be updated to use sqdiff
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
         self.var[winner, :] += self.VARRATE * vdiff
         self.starv *= (1.0 - self.STARVRATE)
         self.starv[winner] += self.STARVRATE
