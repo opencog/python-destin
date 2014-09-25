@@ -1,4 +1,14 @@
 __author__ = 'teddy'
+
+"""
+This is based on the papers:
+    A. Lemme, R. F. Reinhart and J. J. Steil.
+    "Online learning and generalization of parts-based image representations
+     by Non-Negative Sparse Autoencoders". Submitted to Neural Networks,
+                              OR
+    A. Lemme, R. F. Reinhart and J. J. Steil. "Efficient online learning of
+    a non-negative sparse autoencoder". In Proc. ESANN, 2010.
+"""
 import numpy as np
 import numpy.random as rand
 
