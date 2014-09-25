@@ -38,7 +38,6 @@ class Clustering:
         self.var = 0.001 * np.ones((self.CENTS, self.DIMS))
         self.starv = np.ones((self.CENTS, 1))
         self.belief = np.zeros((1, self.CENTS))
-
         self.children = []
         self.last = np.zeros((1, self.DIMS))
         self.whitening = False
@@ -47,7 +46,6 @@ class Clustering:
         """
         Update the node based on an input and training flag.
         """
-
         input = input.reshape(1, self.DIMS)
         self.process_input(input, TRAIN)
 
@@ -102,7 +100,6 @@ class Clustering:
             self.belief = np.zeros((1, self.CENTS))
             self.belief[chk] = 1.0
         else:
-
             normdist = 1 / normdist
             self.belief = (normdist / sum(normdist)).reshape(1, self.CENTS)
 

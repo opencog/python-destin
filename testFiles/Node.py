@@ -1,15 +1,12 @@
-__author__ = 'Steven'
-# Re-implemented in Theano at iCogLabs
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+# Numpy implementation of clustering
 import numpy as np
-from theano.tensor.shared_randomstreams import RandomStreams
-from theano import function
+import scipy.spatial.distance as npdist
+from scipy import weave
+from scipy.weave import converters
 
 
-class Clustering:
-<<<<<<< HEAD
-
-=======
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
+class Node:
     """
     This is the basic clustering class.
     """
@@ -32,15 +29,8 @@ class Clustering:
         self.DIMS = di
         self.CENTS = ce
         self.ID = node_id
-        srng = RandomStreams(seed=234)
-        rv_u = srng.uniform((self.CENTS, self.DIMS))
-        f = function([], rv_u)
-<<<<<<< HEAD
-        self.mean = f()  # np.random.rand(self.CENTS, self.DIMS)
-=======
-        self.mean = f()#np.random.rand(self.CENTS, self.DIMS)
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
-        print type(self.mean)
+
+        self.mean = np.random.rand(self.CENTS, self.DIMS)
         self.var = 0.001 * np.ones((self.CENTS, self.DIMS))
         self.starv = np.ones((self.CENTS, 1))
         self.belief = np.zeros((1, self.CENTS))
@@ -72,8 +62,8 @@ class Clustering:
     def train_node(self, diff, sqdiff):
         """
         Node model (means, variances) update function for base
-        class and subclasses. Subclass should overide if
-        Euclidean distance is not desired for selecting
+        class and subclasses. Subclass should overide if 
+        Euclidean distance is not desired for selecting 
         winning centroid.
         """
 
@@ -92,12 +82,7 @@ class Clustering:
         # Find and Update Winner
         winner = np.argmin(dist)
         self.mean[winner, :] += self.MEANRATE * diff[winner, :]
-<<<<<<< HEAD
-        # this should be updated to use sqdiff
-        vdiff = np.square(diff[winner, :]) - self.var[winner, :]
-=======
         vdiff = np.square(diff[winner, :]) - self.var[winner, :]  # this should be updated to use sqdiff
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
         self.var[winner, :] += self.VARRATE * vdiff
         self.starv *= (1.0 - self.STARVRATE)
         self.starv[winner] += self.STARVRATE
@@ -107,7 +92,7 @@ class Clustering:
         Update belief state.
         """
 
-        normdist = np.sum(sqdiff / self.var, axis=1)
+        normdist = sum(sqdiff / self.var, axis=1)
         chk = (normdist == 0)
         if any(chk):
             self.belief = np.zeros((1, self.CENTS))
@@ -147,4 +132,93 @@ class Clustering:
         self.whiten_mat = tr
 
     def clear_belief(self):
+        """
+        Do nothing function so calling functions can be written
+        to be compatible with both recurrent and non-recurrent
+        clustering.
+        """
+
         pass
+
+
+class SupNode(Node):
+    """
+    This subclass implements supervised clustering. The first
+    N dimensions of the input should be the label. Currently 
+    a subclass of Node (e.g. no recurrent clustering).
+    """
+
+    def __init__(self, mr, vr, sr, di, ce, node_id, label_size):
+        """
+        Initialization function.
+        """
+
+        di += label_size
+        # self.rec_init(mr, vr, sr, di, ce, node_id)
+        self.common_init(mr, vr, sr, di, ce, node_id)
+        self.SUP_MASK = np.zeros(self.DIMS, dtype=bool)
+        self.SUP_MASK[label_size:] = True
+        self.EXTDIMS = di - label_size
+        self.LABDIMS = label_size
+
+    def produce_belief(self, sqdiff):
+        """
+        Belief state update function.
+        """
+
+        normdist = np.sum(sqdiff[:, self.SUP_MASK] / self.var[:, self.SUP_MASK], axis=1)
+        chk = (normdist == 0)
+        if any(chk):
+            self.belief = np.zeros((1, self.CENTS))
+            self.belief[chk] = 1.0
+        else:
+            normdist = 1 / normdist
+            self.belief = (normdist / sum(normdist)).reshape(1, self.CENTS)
+
+
+    def update_node(self, input, TRAIN, label):
+        """
+        Update node based on input, label, and training flag.
+        """
+
+        input = input.reshape(1, self.EXTDIMS)
+        if self.whitening and not (self.children):
+            input = (input - self.patch_mean) / self.patch_std
+            input = input.dot(self.whiten_mat)
+        # input = concatenate([label.reshape(1,self.LABDIMS), input, self.belief], axis=1)
+        input = np.concatenate([label.reshape(1, self.LABDIMS), input], axis=1)
+
+        self.process_input(input, TRAIN)
+
+    def latched_update(self, TRAIN, label):
+        """
+        Update node with children nodes.
+        """
+
+        input = np.concatenate([c.belief for c in self.children], axis=1)
+        self.update_node(input, TRAIN, label)
+
+
+def main():
+    """
+    Simple test function for development.
+    """
+
+    DIMS = 16
+    CENTS = 30
+    NEXAMPLES = 100000
+    n1 = SupNode(0.01, 0.01, 0.001, DIMS, CENTS, 1, 5)
+    input_array = np.random.rand(NEXAMPLES, DIMS)
+    labels = np.zeros(NEXAMPLES * 5)
+    tmp = np.random.randint(5, size=NEXAMPLES) + np.arange(NEXAMPLES) * 5
+    labels[tmp] = 1.0
+    labels.shape = (NEXAMPLES, 5)
+    for row, label in zip(input_array, labels):
+        n1.update_node(row, True, label)
+
+    print n1.starv
+
+
+if __name__ == "__main__":
+    main()
+

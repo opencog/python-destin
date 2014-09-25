@@ -1,4 +1,4 @@
-#  -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Tue Jul  2 2014
 @author: teddy
