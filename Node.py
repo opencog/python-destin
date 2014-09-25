@@ -51,15 +51,16 @@ class Node:
             self.Belief = self.LearningAlgorithm.belief
         else:
             self.LearningAlgorithm.train(self.Input)
-            Activations = np.dot(
-                np.transpose(self.LearningAlgorithm.W), np.transpose(self.Input))
-            Activations = Activations / (np.sum(Activations))
-            Belief = self.Belief
-            Belief = np.maximum(Activations, 0)
+            W = np.transpose(self.LearningAlgorithm.W/np.sum(self.LearningAlgorithm.W,0))
+            Input = np.transpose(self.Input)/np.sum(np.transpose(self.Input),0)
+            Activations = np.dot(W, Input)
+            Belief = Activations / (np.sum(Activations))
             self.Belief = Belief
-            #  for K in range(Activations.shape[0]):
+            # Belief = np.maximum(Activations, 0)
+            # self.Belief = Belief
+            # for K in range(Activations.shape[0]):
             #     Belief[K] = max(0.0, float((Activations[K] - 0.025)))
-            self.Belief = np.asarray(Belief)
+            # self.Belief = np.asarray(Belief)/np.sum(Belief)
 
             """
 
