@@ -5,3 +5,5 @@ octave-core
 *.mat
 LearningAlgorithm.py
 testFiles/*
+test/*
+train/*

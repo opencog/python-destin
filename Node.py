@@ -31,12 +31,12 @@ class Node:
                 InputWidth = CentsPerLayer[self.LayerNumber - 1] * 4
             self.LearningAlgorithm = Clustering(AlgParams['mr'], AlgParams['vr'], AlgParams['sr'], InputWidth,
                                                 AlgParams['NumCentsPerLayer'][self.LayerNumber], self.NodePosition)
+            # mr, vr, sr, di, ce, node_id
         else:
             self.Belief = np.ones((AlgParams[self.LayerNumber][1], 1))
             self.AlgorithmChoice = AlgorithmChoice
             self.LearningAlgorithm = NNSAE(
                 AlgParams[self.LayerNumber][0], AlgParams[self.LayerNumber][1])
-            # print('Only Incremental Clustering Exists')
 
     def loadInput(self, In):
         if self.LayerNumber == 0:
@@ -50,7 +50,6 @@ class Node:
             self.LearningAlgorithm.update_node(self.Input, Mode)
             self.Belief = self.LearningAlgorithm.belief
         else:
-            print "Some Thing is Wrong with naming of Algorithms!"
             self.LearningAlgorithm.train(self.Input)
             Activations = np.dot(
                 np.transpose(self.LearningAlgorithm.W), np.transpose(self.Input))

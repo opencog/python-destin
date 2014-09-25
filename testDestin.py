@@ -1,6 +1,8 @@
 __author__ = 'teddy'
 from Network import *
 from loadData import *
+from time import time
+import cPickle as pickle
 
 """
 Here I don't move the image, I rather let a typical node move around the image
@@ -14,7 +16,7 @@ PatchMode = 'Adjacent'
 ImageType = 'Color'
 NetworkMode = True
 # For a Node: specify Your Algorithm Choice and Corresponding parameters
-# '''
+'''
 # ******************************************************************************************
 #
 #                           Incremental Clustering
@@ -27,9 +29,9 @@ AlgParams = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [],
              'CENTS': [], 'node_id': [],
              'NumCentsPerLayer': NumCentsPerLayer}
 # ******************************************************************************************
-# '''
 '''
-  ******************************************************************************************
+# '''
+#  ******************************************************************************************
 
 #           Hierarchy Of AutoEncoders
 
@@ -40,51 +42,47 @@ AlgorithmChoice = 'AutoEncoder'
 InpSize = 48
 HidSize = 100
 AlgParams = [[InpSize,HidSize],[4*HidSize,HidSize],[4*HidSize,HidSize],[4*HidSize,HidSize]]
-  ******************************************************************************************
-'''
+#  ******************************************************************************************
+# '''
 
 # Declare a Network Object
-print "One"
 DESTIN = Network(
     numLayers, AlgorithmChoice, AlgParams, NumNodesPerLayer, PatchMode, ImageType)
-print "Two"
 DESTIN.setMode(NetworkMode)
 DESTIN.setLowestLayer(0)
-print "Three"
 # Load Data
 # data = np.random.rand(32,32,3)
 [data, labels] = loadCifar(1)  # loads cifar_data_batch_1
 # data = np.random.rand(5,32*32*3)
 # Initialize Network; there is is also a layer-wise initialization option
 DESTIN.initNetwork()
-print "Four"
-# data.shape[0]
+t = time()
 for I in range(data.shape[0]):  # For Every image in the data set
-    if I % 1 == 0:
+    if I % 10 == 0:
+        print time() - t
+        t = time()
         print("Training Iteration Number %d" % I)
     for L in range(DESTIN.NumberOfLayers):
         if L == 0:
             img = data[I][:].reshape(32, 32, 3)
             DESTIN.Layers[0][L].trainTypicalNode(img, [4, 4], AlgorithmChoice)
-            # DESTIN.Layers[0][L].shareLearnedParameters()# This is equivalent to sharing centroids or kernels
-            # DESTIN.Layers[0][L].loadInput(img,[4,4])
-            # DESTIN.Layers[0][L].doLayerLearning()# Calculates belief for
+            DESTIN.Layers[0][L].shareLearnedParameters()# This is equivalent to sharing centroids or kernels
+            DESTIN.Layers[0][L].loadInput(img,[4,4])
+            DESTIN.Layers[0][L].doLayerLearning()# Calculates belief for
             # every Node using the shared parameters and inputs of the Nodes
         else:
             DESTIN.Layers[0][L].trainTypicalNode(
                 DESTIN.Layers[0][L - 1].Nodes, [2, 2], AlgorithmChoice)
-            # DESTIN.Layers[0][L].shareLearnedParameters()
-            # DESTIN.Layers[0][L].loadInput(DESTIN.Layers[0][L-1].Nodes,[2,2])
-            # DESTIN.Layers[0][L].doLayerLearning()
+            DESTIN.Layers[0][L].shareLearnedParameters()
+            DESTIN.Layers[0][L].loadInput(DESTIN.Layers[0][L-1].Nodes,[2,2])
+            DESTIN.Layers[0][L].doLayerLearning()
     DESTIN.updateBeliefExporter()
-'''
-    if I in range(499,50999,500):
+    if I in range(199,50999,200):
         Name = 'train/' + str(I+1) + '.txt'
         FID = open(Name,'w')
-        pickle.dump(np.array(myLayer.LayerBeliefs['Belief']), FID)
+        pickle.dump(np.array(DESTIN.NetworkBelief['Belief']), FID)
         FID.close()
-        myLayer.cleanBeliefExporter()# Get rid-off accumulated training beliefs
-'''
+        DESTIN.cleanBeliefExporter()# Get rid-off accumulated training beliefs
 
 DESTIN.dumpBelief(2)
 DESTIN.cleanBeliefExporter()  # Get rid-off accumulated training beliefs
