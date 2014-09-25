@@ -1,12 +1,13 @@
 __author__ = 'Steven'
 # Re-implemented in Theano at iCogLabs
 import numpy as np
-#from theano.tensor.shared_randomstreams import RandomStreams
-#from theano import function
-#import theano.tensor as T
+# from theano.tensor.shared_randomstreams import RandomStreams
+# from theano import function
+# import theano.tensor as T
 
 
 class Clustering:
+
     """
     This is the basic clustering class.
     """
@@ -29,11 +30,11 @@ class Clustering:
         self.DIMS = di
         self.CENTS = ce
         self.ID = node_id
-        #srng = RandomStreams(seed=100)
-        #rv_u = srng.uniform((self.CENTS, self.DIMS))
-        #f = function([], rv_u)
+        # srng = RandomStreams(seed=100)
+        # rv_u = srng.uniform((self.CENTS, self.DIMS))
+        # f = function([], rv_u)
         self.mean = np.random.rand(self.CENTS, self.DIMS)
-        #print self.mean
+        #  print self.mean
         self.var = 0.001 * np.ones((self.CENTS, self.DIMS))
         self.starv = np.ones((self.CENTS, 1))
         self.belief = np.zeros((1, self.CENTS))
@@ -85,7 +86,8 @@ class Clustering:
         # Find and Update Winner
         winner = np.argmin(dist)
         self.mean[winner, :] += self.MEANRATE * diff[winner, :]
-        vdiff = np.square(diff[winner, :]) - self.var[winner, :]  # this should be updated to use sqdiff
+        # this should be updated to use sqdiff
+        vdiff = np.square(diff[winner, :]) - self.var[winner, :]
         self.var[winner, :] += self.VARRATE * vdiff
         self.starv *= (1.0 - self.STARVRATE)
         self.starv[winner] += self.STARVRATE
