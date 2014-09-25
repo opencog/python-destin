@@ -9,6 +9,7 @@ rng = np.random
 from Node import *
 
 
+
 def main():
     myNode = Node(1, [2, 2])  # LayerNum=1, LayerPos=[2,2]
     # Prepare AlgParams,InitNodeBelief,InitNodeLearnedFeatures
@@ -30,22 +31,14 @@ def main():
     Row = 4
     Col = 4
     LayerNum = 2
-<<<<<<< HEAD
     NodeArray = [[Node(LayerNum, [i, j]) for j in range(Row)]
                  for i in range(Col)]
-=======
-    NodeArray = [[Node(LayerNum, [i, j]) for j in range(Row)] for i in range(Col)]
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
     for I in range(Row):
         for J in range(Col):
             print(NodeArray[I][J].NodePosition)
             NodeArray[I][J].loadInput(D)
             myNode.initNodeLearningParams(AlgorithmChoice, AlgParams)
-<<<<<<< HEAD
             # myNode.doNodeLearning('training')
-=======
-            #myNode.doNodeLearning('training')
->>>>>>> ab02f8d2a9e47bf672c5d77c5f60b408df2c9fdb
 
     print(type(myNode.Belief))
 
