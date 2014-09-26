@@ -8,26 +8,26 @@ import cPickle as pickle
 Here I don't move the image, I rather let a typical node move around the image
 This is to make use of the methods from the previous UniformDeSTIN version
 """
-# *****Define Parameters for the Network and Nodes
+# *****Define Parameters for the Network and nodes
 
 # Network Params
-numLayers = 4
-PatchMode = 'Adjacent'
-ImageType = 'Color'
-NetworkMode = True
+num_layers = 4
+patch_mode = 'Adjacent'
+image_type = 'Color'
+network_mode = True
 # For a Node: specify Your Algorithm Choice and Corresponding parameters
 '''
 # ******************************************************************************************
 #
 #                           Incremental Clustering
 #
-NumNodesPerLayer = [[8, 8], [4, 4], [2, 2], [1, 1]]
-NumCentsPerLayer = [25, 25, 25, 25]
+num_nodes_per_layer = [[8, 8], [4, 4], [2, 2], [1, 1]]
+num_cents_per_layer = [25, 25, 25, 25]
 print "Uniform DeSTIN with Clustering"
-AlgorithmChoice = 'Clustering'
-AlgParams = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [],
+algorithm_choice = 'Clustering'
+alg_params = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [],
              'CENTS': [], 'node_id': [],
-             'NumCentsPerLayer': NumCentsPerLayer}
+             'num_cents_per_layer': num_cents_per_layer}
 # ******************************************************************************************
 '''
 # '''
@@ -36,52 +36,52 @@ AlgParams = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [],
 #           Hierarchy Of AutoEncoders
 
 print "Uniform DeSTIN with AutoEncoders"
-NumNodesPerLayer = [[8, 8], [4, 4], [2, 2], [1, 1]]
-NumCentsPerLayer = [25, 25, 25, 25]
-AlgorithmChoice = 'AutoEncoder'
-InpSize = 48
-HidSize = 100
-AlgParams = [[InpSize, HidSize], [4 * HidSize, HidSize],
-             [4 * HidSize, HidSize], [4 * HidSize, HidSize]]
+num_nodes_per_layer = [[8, 8], [4, 4], [2, 2], [1, 1]]
+num_cents_per_layer = [25, 25, 25, 25]
+algorithm_choice = 'AutoEncoder'
+inp_size = 48
+hid_size = 100
+alg_params = [[inp_size, hid_size], [4 * hid_size, hid_size],
+             [4 * hid_size, hid_size], [4 * hid_size, hid_size]]
 #  ******************************************************************************************
 # '''
 
 # Declare a Network Object
 DESTIN = Network(
-    numLayers, AlgorithmChoice, AlgParams, NumNodesPerLayer, PatchMode, ImageType)
-DESTIN.setMode(NetworkMode)
-DESTIN.setLowestLayer(0)
+    num_layers, algorithm_choice, alg_params, num_nodes_per_layer, patch_mode, image_type)
+DESTIN.setmode(network_mode)
+DESTIN.set_lowest_layer(0)
 # Load Data
 [data, labels] = loadCifar(10)  # loads cifar_data_batch_1
 del labels
 # data = np.random.rand(5,32*32*3)
 # Initialize Network; there is is also a layer-wise initialization option
-DESTIN.initNetwork()
+DESTIN.init_network()
 t = time()
 for I in range(data.shape[0]):  # For Every image in the data set
     if I % 1000 == 0:
         print time() - t
         t = time()
         print("Training Iteration Number %d" % I)
-    for L in range(DESTIN.NumberOfLayers):
+    for L in range(DESTIN.number_of_layers):
         if L == 0:
             img = data[I][:].reshape(32, 32, 3)
-            DESTIN.Layers[0][L].trainTypicalNode(img, [4, 4], AlgorithmChoice)
+            DESTIN.layers[0][L].train_typical_node(img, [4, 4], algorithm_choice)
             # This is equivalent to sharing centroids or kernels
-            DESTIN.Layers[0][L].shareLearnedParameters()
-            DESTIN.Layers[0][L].loadInput(img, [4, 4])
-            DESTIN.Layers[0][L].doLayerLearning()
+            DESTIN.layers[0][L].share_learned_parameters()
+            DESTIN.layers[0][L].load_input(img, [4, 4])
+            DESTIN.layers[0][L].do_layer_learning()
         else:
-            DESTIN.Layers[0][L].trainTypicalNode(
-                DESTIN.Layers[0][L - 1].Nodes, [2, 2], AlgorithmChoice)
-            DESTIN.Layers[0][L].shareLearnedParameters()
-            DESTIN.Layers[0][L].loadInput(
-                DESTIN.Layers[0][L - 1].Nodes, [2, 2])
-            DESTIN.Layers[0][L].doLayerLearning()
+            DESTIN.layers[0][L].train_typical_node(
+                DESTIN.layers[0][L - 1].nodes, [2, 2], algorithm_choice)
+            DESTIN.layers[0][L].share_learned_parameters()
+            DESTIN.layers[0][L].load_input(
+                DESTIN.layers[0][L - 1].nodes, [2, 2])
+            DESTIN.layers[0][L].do_layer_learning()
 
 print("Testing Started")
-NetworkMode = False
-DESTIN.setMode(NetworkMode)
+network_mode = False
+DESTIN.setmode(network_mode)
 # On the training set
 [data, labels] = loadCifar(10)
 del labels
@@ -90,23 +90,23 @@ for I in range(data.shape[0]):  # For Every image in the data set
         print time() - t
         t = time()
         print("Testing Iteration Number %d" % I)
-    for L in range(DESTIN.NumberOfLayers):
+    for L in range(DESTIN.number_of_layers):
         if L == 0:
             img = data[I][:].reshape(32, 32, 3)
-            DESTIN.Layers[0][L].loadInput(img, [4, 4])
-            DESTIN.Layers[0][L].doLayerLearning()
+            DESTIN.layers[0][L].load_input(img, [4, 4])
+            DESTIN.layers[0][L].do_layer_learning()
         else:
-            DESTIN.Layers[0][L].loadInput(
-                DESTIN.Layers[0][L - 1].Nodes, [2, 2])
-            DESTIN.Layers[0][L].doLayerLearning()
-    DESTIN.updateBeliefExporter()
+            DESTIN.layers[0][L].load_input(
+                DESTIN.layers[0][L - 1].nodes, [2, 2])
+            DESTIN.layers[0][L].do_layer_learning()
+    DESTIN.update_belief_exporter()
     if I in range(199, 50999, 200):
         Name = 'train/' + str(I + 1) + '.txt'
-        FID = open(Name, 'w')
-        pickle.dump(np.array(DESTIN.NetworkBelief['Belief']), FID)
-        FID.close()
+        file_id = open(Name, 'w')
+        pickle.dump(np.array(DESTIN.network_belief['belief']), file_id)
+        file_id.close()
         # Get rid-off accumulated training beliefs
-        DESTIN.cleanBeliefExporter()
+        DESTIN.clean_belief_exporter()
 # On the test set
 [data, labels] = loadCifar(6)
 # data = np.random.rand(5,32*32*3)
@@ -114,20 +114,20 @@ del labels
 for I in range(data.shape[0]):  # For Every image in the data set
     if I % 1000 == 0:
         print("Testing Iteration Number %d" % (I+50000))
-    for L in range(DESTIN.NumberOfLayers):
+    for L in range(DESTIN.number_of_layers):
         if L == 0:
             img = data[I][:].reshape(32, 32, 3)
-            DESTIN.Layers[0][L].loadInput(img, [4, 4])
-            DESTIN.Layers[0][L].doLayerLearning()  # Calculates belief for
+            DESTIN.layers[0][L].load_input(img, [4, 4])
+            DESTIN.layers[0][L].do_layer_learning()  # Calculates belief for
         else:
-            DESTIN.Layers[0][L].loadInput(
-                DESTIN.Layers[0][L - 1].Nodes, [2, 2])
-            DESTIN.Layers[0][L].doLayerLearning()
-    DESTIN.updateBeliefExporter()
+            DESTIN.layers[0][L].load_input(
+                DESTIN.layers[0][L - 1].nodes, [2, 2])
+            DESTIN.layers[0][L].do_layer_learning()
+    DESTIN.update_belief_exporter()
     if I in range(199, 10199, 200):
         Name = 'test/' + str(I + 1) + '.txt'
-        FID = open(Name, 'w')
-        pickle.dump(np.array(DESTIN.NetworkBelief['Belief']), FID)
-        FID.close()
+        file_id = open(Name, 'w')
+        pickle.dump(np.array(DESTIN.network_belief['belief']), file_id)
+        file_id.close()
         # Get rid-off accumulated training beliefs
-        DESTIN.cleanBeliefExporter()
+        DESTIN.clean_belief_exporter()

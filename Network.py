@@ -4,66 +4,66 @@ import scipy.io as io
 
 from Layer import *
 
-# io.savemat(FileName,Dict,True)
+# io.savemat(file_name,Dict,True)
 # TODO: get ridoff the sequential requirements like first feed the layer
 # an input the you can initialize it
 
 
 class Network():
 
-    def __init__(self, numLayers, AlgChoice, AlgParams, NumNodesPerLayer, PatchMode='Adjacent', ImageType='Color'):
-        self.NetworkBelief = {}
-        self.LowestLayer = 1
+    def __init__(self, num_layers, alg_choice, alg_params, num_nodes_per_layer, patch_mode='Adjacent', image_type='Color'):
+        self.network_belief = {}
+        self.lowest_layer = 1
         # this is going to store beliefs for every image DeSTIN sees
-        self.NetworkBelief['Belief'] = np.array([])
-        self.saveBeliefOption = 'True'
-        self.BeliefFileName = 'Beliefs.mat'
-        self.NumberOfLayers = numLayers
-        self.AlgorithmChoice = AlgChoice
-        self.AlgorithmParams = AlgParams
-        self.NumberOfNodesPerLayer = NumNodesPerLayer
-        self.PatchMode = PatchMode
-        self.ImageType = ImageType
-        self.Layers = [
-            [Layer(j, NumNodesPerLayer[j], self.PatchMode, self.ImageType) for j in range(numLayers)]]
+        self.network_belief['belief'] = np.array([])
+        self.save_belief_option = 'True'
+        self.belief_file_name = 'beliefs.mat'
+        self.number_of_layers = num_layers
+        self.algorithm_choice = alg_choice
+        self.algorithm_params = alg_params
+        self.number_of_nodesPerLayer = num_nodes_per_layer
+        self.patch_mode = patch_mode
+        self.image_type = image_type
+        self.layers = [
+            [Layer(j, num_nodes_per_layer[j], self.patch_mode, self.image_type) for j in range(num_layers)]]
 
-    def setMode(self, Mode):
-        self.OperatingMode = Mode
-        for I in range(self.NumberOfLayers):
-            self.Layers[0][I].Mode = Mode
+    def setmode(self, mode):
+        self.operating_mode = mode
+        for I in range(self.number_of_layers):
+            self.layers[0][I].mode = mode
 
-    def initNetwork(self):
-        for L in range(self.NumberOfLayers):
+    def init_network(self):
+        for L in range(self.number_of_layers):
             self.initLayer(L)
 
-    def setLowestLayer(self, LowestLayer):
-        self.LowestLayer = LowestLayer
+    def set_lowest_layer(self, lowest_layer):
+        self.lowest_layer = lowest_layer
 
-    def initLayer(self, LayerNum):
-        self.Layers[0][LayerNum].initLayerLearningParams(
-            self.AlgorithmChoice, self.AlgorithmParams)
+    def initLayer(self, layer_num):
+        self.layers[0][layer_num].init_layer_learning_params(
+            self.algorithm_choice, self.algorithm_params)
 
-    def trainLayer(self, LayerNum):
-        self.Layers[0][LayerNum].doLayerLearning(self.OperatingMode)
+    def train_layer(self, layer_num):
+        self.layers[0][layer_num].do_layer_learning(self.operating_mode)
 
-    def updateBeliefExporter(self):
-        for i in range(self.LowestLayer, self.NumberOfLayers):
-            for j in range(len(self.Layers[0][i].Nodes)):
-                for k in range(len(self.Layers[0][i].Nodes[0])):
-                    if self.NetworkBelief['Belief'] == np.array([]):
-                        self.NetworkBelief['Belief'] = np.array(
-                            self.Layers[0][i].Nodes[j][k].Belief).ravel()
+    def update_belief_exporter(self):
+        for i in range(self.lowest_layer, self.number_of_layers):
+            for j in range(len(self.layers[0][i].nodes)):
+                for k in range(len(self.layers[0][i].nodes[0])):
+                    if self.network_belief['belief'] == np.array([]):
+                        self.network_belief['belief'] = np.array(
+                            self.layers[0][i].nodes[j][k].belief).ravel()
                     else:
-                        self.NetworkBelief['Belief'] = np.hstack((np.array(self.NetworkBelief['Belief']),
-                                                                  np.array(self.Layers[0][i].Nodes[j][k].Belief).ravel()))
+                        self.network_belief['belief'] = np.hstack((np.array(self.network_belief['belief']),
+                                                                  np.array(self.layers[0][i].nodes[j][k].belief).ravel()))
 
-    def dumpBelief(self, NumOfImages):
-        TotalBeliefLen = len(np.array(self.NetworkBelief).ravel())
-        SingleBeliefLen = TotalBeliefLen / NumOfImages
-        print np.array(self.NetworkBelief).ravel()
-        Belief = np.array(self.NetworkBelief).reshape(
-            NumOfImages, SingleBeliefLen)
-        io.savemat(self.BeliefFileName, Belief)
+    def dump_belief(self, num_of_images):
+        total_belief_len = len(np.array(self.network_belief).ravel())
+        single_belief_len = total_belief_len / num_of_images
+        print np.array(self.network_belief).ravel()
+        belief = np.array(self.network_belief).reshape(
+            num_of_images, single_belief_len)
+        io.savemat(self.belief_file_name, belief)
 
-    def cleanBeliefExporter(self):
-        self.NetworkBelief['Belief'] = np.array([])
+    def clean_belief_exporter(self):
+        self.network_belief['belief'] = np.array([])

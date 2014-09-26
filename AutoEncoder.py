@@ -5,7 +5,7 @@ This is based on the papers:
     A. Lemme, R. F. Reinhart and J. J. Steil.
     "Online learning and generalization of parts-based image representations
      by Non-Negative Sparse Autoencoders". Submitted to Neural Networks,
-                              OR
+                              And
     A. Lemme, R. F. Reinhart and J. J. Steil. "Efficient online learning of
     a non-negative sparse autoencoder". In Proc. ESANN, 2010.
 """
@@ -15,15 +15,15 @@ import numpy.random as rand
 
 class NNSAE:
 
-    def __init__(self, inpDim, hidDim):
-        self.inpDim = inpDim  # number of input neurons (and output neurons)
-        self.hidDim = hidDim  # number of hidden neurons
-        self.inp = np.zeros((inpDim, 1))  # vector holding current input
-        self.out = np.zeros((inpDim, 1))  # output neurons
-        self.g = np.zeros((inpDim, 1))  # neural activity before non-linearity
-        self.a = np.ones((hidDim, 1))
-        self.h = np.zeros((inpDim, 1))  # hidden neuron activation
-        self.b = -3 * np.ones((hidDim, 1))
+    def __init__(self, inp_dim, hid_dim):
+        self.inp_dim = inp_dim  # number of input neurons (and output neurons)
+        self.hid_dim = hid_dim  # number of hidden neurons
+        self.inp = np.zeros((inp_dim, 1))  # vector holding current input
+        self.out = np.zeros((inp_dim, 1))  # output neurons
+        self.g = np.zeros((inp_dim, 1))  # neural activity before non-linearity
+        self.a = np.ones((hid_dim, 1))
+        self.h = np.zeros((inp_dim, 1))  # hidden neuron activation
+        self.b = -3 * np.ones((hid_dim, 1))
         # learning rate for synaptic plasticity of read-out layer (RO)
         self.lrateRO = 0.01
         # 0.0001 * (2 / (3 * lnum))  #numerical regularization constant
@@ -33,14 +33,14 @@ class NNSAE:
         self.lrateIP = 0.001  # learning rate for intrinsic plasticity (IP)
         self.meanIP = 0.2  # desired mean activity, a parameter of IP
         self.W = 0.025 * \
-            (2 * rand.rand(inpDim, hidDim) - 0.5 *
-             np.ones((inpDim, hidDim))) + 0.025
+            (2 * rand.rand(inp_dim, hid_dim) - 0.5 *
+             np.ones((inp_dim, hid_dim))) + 0.025
 
     def apply(self, X):
         X = np.asmatrix(X)
-        X = np.asarray(X.reshape(np.size(X), 1))
+        X = np.asarray(X.reshape(np.size(X),1))
         if np.asarray(X).shape[1] != 1:
-            print('Use Input which are Row Vectors of shape (1xL)')
+            print('Use input which are Row Vectors of shape (1xL)')
             # exit(1)
         else:
             self.inp = X
@@ -49,7 +49,7 @@ class NNSAE:
             return Xhat
 
     def train(self, X):
-        # set Input
+        # set input
         # self.inp = np.asarray(X).transpose()
         X = np.asmatrix(X)
         X = np.asarray(X.reshape(np.size(X), 1))
@@ -93,7 +93,7 @@ class NNSAE:
         else:
             pass
         # Intrinsic Plasticity
-        hones = np.ones((self.hidDim, 1))
+        hones = np.ones((self.hid_dim, 1))
         tmp = self.lrateIP * \
             (hones - (2.0 + float(1.0) / self.meanIP)
              * self.h + np.power(self.h, 2) / self.meanIP)

@@ -2,8 +2,8 @@ __author__ = 'teddy'
 from AutoEncoder import *
 import scipy.io as io
 from pprint import pprint
-# declaring an AE object by specifying the network dimensions let inpDim =
-# 4 hidDim = 4
+# declaring an AE object by specifying the network dimensions let inp_dim =
+# 4 hid_dim = 4
 testAE = NNSAE(400, 200)
 epoch = 1
 Data = io.loadmat('data.mat')

@@ -3,14 +3,14 @@ As a starting point:
 	-> here I have developed a Node and Learning Algorithm Classes
 		- Just to get a sense og Learning Algorithm inside a node.
 		  I put a LogisticRegression implemented in theano 
-	-> LearningAlgorithm Class is placed as attribute of the Node class.
-	-> LearningAlgorithm Object does the actual learning for the node.
-The whole PyDeSTIN will have Four Classes: LearningAlgorithm, Node, Layer and Network
+	-> learning_algorithm Class is placed as attribute of the Node class.
+	-> learning_algorithm Object does the actual learning for the node.
+The whole PyDeSTIN will have Four Classes: learning_algorithm, Node, Layer and Network
 The Classes will be placed in a nested fashion as follows:
 -> Network
      Layer
     	Node
-	      LearningAlgorithm
+	      learning_algorithm
 Installation Instructions:
 -> Clone the repo by running
     git clone https://github.com/tedyhabtegebrial/PythonDeSTIN.git
