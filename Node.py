@@ -51,9 +51,9 @@ class Node:
             self.belief = self.learning_algorithm.belief
         else:
             self.learning_algorithm.train(self.input)
-            W = np.transpose(self.learning_algorithm.W/np.sum(self.learning_algorithm.W,0))
+            W = np.transpose((self.learning_algorithm.W + 0.00005)/np.sum((self.learning_algorithm.W + 0.00005),0))
             input = np.transpose(self.input)/np.sum(np.transpose(self.input),0)
-            Activations = np.dot(W, input)
+            Activations = np.dot(W, input) + 0.00005
             belief = Activations / (np.sum(Activations))
             self.belief = belief
             # belief = np.maximum(Activations, 0)

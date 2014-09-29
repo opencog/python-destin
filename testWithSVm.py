@@ -3,8 +3,9 @@ __author__ = 'teddy'
 import cPickle as pickle
 from sklearn import svm
 from loadData import *
+import scipy.io as io
 
-# Loading Training and Testing Labels from Cifar data set
+# Loading Training and Testing Labels from cifar data set
 print("Loading training and test labels")
 [trainData, trainLabel] = loadCifar(10)
 del trainData
@@ -24,15 +25,18 @@ del Temp
 totLen = len(trainData)
 Width = int(totLen / 50000)
 trainData = trainData.reshape(50000, Width)
-trainData = trainData[:,6400:8500]
+trainData = trainData[:, 6400:8500]
 
 # Training SVM
-SVM = svm.LinearSVC(C=100, kernel='rbf')
+SVM = svm.LinearSVC(C=10)
+# C=100, kernel='rbf')
 print "Training the SVM"
 trainLabel = np.squeeze(np.asarray(trainLabel).reshape(50000, 1))
 SVM.fit(trainData, trainLabel)
-
-print("Training Accuracy = %f" % SVM.score((trainData,trainLabel) * 100))
+print("Training Score = %f " % float(100 * SVM.score(trainData, trainLabel, sample_weight=None)))
+#print("Training Accuracy = %f" % (SVM.score(trainData, trainLabel) * 100))
+eff = {}
+eff['train'] = SVM.score(trainData, trainLabel) * 100
 del trainData
 
 testData = np.array([])
@@ -45,7 +49,10 @@ for I in range(199, 10000, 200):
 totLen = len(testData)
 Width = int(totLen / 10000)
 testData = testData.reshape(10000, Width)
-testData = testData[:,6400:8500]
+testData = testData[:, 6400:8500]
 del Temp
 print "Predicting Test samples"
-print("Training Accuracy = %f" % (SVM.score(testData, testLabel) * 100))
+print("Test Score = %f" % float(100 * SVM.score(testData, testLabel, sample_weight = None)))
+#print("Training Accuracy = %f" % (SVM.score(testData, testLabel) * 100))
+eff['test'] = SVM.score(testData, testLabel) * 100
+io.savemat('accuracy.mat', eff)
