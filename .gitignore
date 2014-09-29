@@ -3,7 +3,6 @@ octave-core
 *~
 ./idea
 *.mat
-LearningAlgorithm.py
 testFiles/
 test/
 train/
