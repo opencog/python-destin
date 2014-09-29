@@ -42,20 +42,20 @@ class Clustering:
         self.last = np.zeros((1, self.DIMS))
         self.whitening = False
 
-    def update_node(self, input, TRAIN):
+    def update_node(self, input_, TRAIN):
         """
         Update the node based on an input and training flag.
         """
-        input = input.reshape(1, self.DIMS)
-        self.process_input(input, TRAIN)
+        input_ = input_.reshape(1, self.DIMS)
+        self.process_input(input_, TRAIN)
 
-    def process_input(self, input, TRAIN):
+    def process_input(self, input_, TRAIN):
         """
         Node update function for base class and subclasses.
         """
 
         # Calculate Distance
-        diff = input - self.mean
+        diff = input_ - self.mean
         sqdiff = np.square(diff)
         if TRAIN:
             self.train_node(diff, sqdiff)
@@ -115,8 +115,8 @@ class Clustering:
         Update node that has children nodes.
         """
 
-        input = np.concatenate([c.belief for c in self.children], axis=1)
-        self.update_node(input, TRAIN)
+        input_ = np.concatenate([c.belief for c in self.children], axis=1)
+        self.update_node(input_, TRAIN)
 
     def init_whitening(self, mn=[], st=[], tr=[]):
         """

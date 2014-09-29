@@ -49,13 +49,10 @@ class NNSAE:
             return Xhat
 
     def train(self, X):
-        # set input
-        # self.inp = np.asarray(X).transpose()
         X = np.asmatrix(X)
         X = np.asarray(X.reshape(np.size(X), 1))
         if np.asarray(self.inp).shape[1] != 1:
             print('Use Inputs which are Row Vectors of shape (1xL)')
-            # exit(1)
         # do forward propagation of activities
         self.update()
 

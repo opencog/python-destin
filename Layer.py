@@ -20,30 +20,30 @@ class Layer:
         self.nodes = nodes
         self.mode = []
 
-    def load_input(self, input, R):
+    def load_input(self, input_, R):
         Ratio = R[0]
         # Ratio equals to the number of lower layer units getting combined and being fed to the upper layer
         if self.layer_number == 0:
             Nx = 0  # X coordinate of the current node
-            for I in range(0, input.shape[0], Ratio):
+            for I in range(0, input_.shape[0], Ratio):
                 Ny = 0  # Y coordinate of the current node
-                for J in range(0, input.shape[1], Ratio):
-                    self.nodes[Nx][Ny].load_input(return_node_input(input, [I, J], Ratio, self.patch_mode,
+                for J in range(0, input_.shape[1], Ratio):
+                    self.nodes[Nx][Ny].load_input(return_node_input(input_, [I, J], Ratio, self.patch_mode,
                                                                  self.image_type))  # returns inputs to the node located at Position [Nx,Ny]
                     Ny += 1
                 Nx += 1
         else:
             Nx = 0  # X coordinate of the current node
             Ny = 0  # Y coordinate of the current node
-            for I in range(0, len(input[0]), Ratio):
+            for I in range(0, len(input_[0]), Ratio):
                 Ny = 0
-                for J in range(0, len(input[1]), Ratio):
-                    inputTemp = np.array([])
+                for J in range(0, len(input_[1]), Ratio):
+                    input_temp = np.array([])
                     for K in range(I, I + Ratio):
                         for L in range(J, J + Ratio):
-                            inputTemp = np.append(inputTemp, np.asarray(input[K][
+                            input_temp = np.append(input_temp, np.asarray(input_[K][
                                                                             L].belief))# Combine the beliefs of the nodes passed
-                    self.nodes[Nx][Ny].load_input(np.ravel(inputTemp))
+                    self.nodes[Nx][Ny].load_input(np.ravel(input_temp))
                     Ny += 1
                 Nx += 1
 
@@ -57,29 +57,29 @@ class Layer:
             for J in range(len(self.nodes[0])):
                 self.nodes[I][J].do_node_learning(self.mode)
 
-    def train_typical_node(self, input, windowSize, algorithm_choice):
+    def train_typical_node(self, input_, windowSize, algorithm_choice):
         TN = self.nodes[0][0]
         [H, V] = windowSize
         if self.layer_number == 0:
-            X = input.shape[0] - H + 1
-            Y = input.shape[1] - V + 1
+            X = input_.shape[0] - H + 1
+            Y = input_.shape[1] - V + 1
             for I in range(X):
                 for J in range(Y):
                     TN.load_input(
-                        return_node_input(input, [I, J], H, self.patch_mode, self.image_type))
+                        return_node_input(input_, [I, J], H, self.patch_mode, self.image_type))
                     TN.do_node_learning(self.mode)
         else:
-            X = len(input[0]) - H + 1
-            Y = len(input[1]) - V + 1
+            X = len(input_[0]) - H + 1
+            Y = len(input_[1]) - V + 1
             for I in range(X):
                 for J in range(Y):
-                    inputTemp = np.array([])
+                    input_temp = np.array([])
                     for K in range(I, I + H):
                         for L in range(J, J + V):
-                            inputTemp = np.append(
-                                inputTemp, np.array(np.ravel(input[K][L].belief)))
+                            input_temp = np.append(
+                                input_temp, np.array(np.ravel(input_[K][L].belief)))
                             # Combine the beliefs of the nodes passed
-                    TN.load_input(np.ravel(inputTemp))
+                    TN.load_input(np.ravel(input_temp))
                     TN.do_node_learning(self.mode)
         self.nodes[0][0] = TN
 

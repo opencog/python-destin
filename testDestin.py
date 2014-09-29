@@ -59,7 +59,7 @@ del labels
 DESTIN.init_network()
 t = time()
 for I in range(data.shape[0]):  # For Every image in the data set
-    if I % 1000 == 0:
+    if I % 200 == 0:
         print time() - t
         t = time()
         print("Training Iteration Number %d" % I)

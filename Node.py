@@ -52,28 +52,56 @@ class Node:
         else:
             self.learning_algorithm.train(self.input)
             W = np.transpose((self.learning_algorithm.W + 0.00005)/np.sum((self.learning_algorithm.W + 0.00005),0))
-            input = np.transpose(self.input)/np.sum(np.transpose(self.input),0)
-            Activations = np.dot(W, input) + 0.00005
-            belief = Activations / (np.sum(Activations))
+            input_ = self.input/np.sum(self.input,0)
+            # input_ = np.transpose(self.input)/np.sum(np.transpose(self.input),0)
+            # print np.shape(W)
+            # print np.shape(input_)
+            # activations = np.dot(W, input_) + 0.00005
+            dist = W - input_
+            sq_dist = np.square(dist)
+            norm_dist = np.sum(sq_dist, axis=1)
+            chk = (norm_dist == 0)
+            if any(chk):
+                self.belief = np.zeros_like(self.belief)
+                self.belief[chk] = 1.0
+            else:
+                norm_dist = 1 / norm_dist
+                belief = (norm_dist / sum(norm_dist)) # .reshape(np.shape(self.belief)[0], np.shape(self.belief)[1])
+            #belief = activations / (np.sum(activations))
             self.belief = belief
-            # belief = np.maximum(Activations, 0)
+            # belief = np.maximum(activations, 0)
             # self.belief = belief
-            # for K in range(Activations.shape[0]):
-            #     belief[K] = max(0.0, float((Activations[K] - 0.025)))
+            # for K in range(activations.shape[0]):
+            #     belief[K] = max(0.0, float((activations[K] - 0.025)))
             # self.belief = np.asarray(belief)/np.sum(belief)
 
             """
 
-    def calcuatebelief(self, input):
-        self.load_inputTonodes(input, [4,4])
+    def calcuatebelief(self, input_):
+        self.load_inputTonodes(input_, [4,4])
         for I in range(len(self.nodes)):
             for J in range(len(self.nodes[0])):
                 W = np.transpose(self.NNSAE.W)
-                Image = return_node_input(input, [I*4, J*4], [4,4], 'Adjacent', 'Color')
-                Activations = np.dot(W, np.transpose(Image))
-                Activations = Activations/sum(sum(Activations))
-                self.nodes[I][J].Activation = Activations
-                m = np.mean(np.mean(Activations,1))
-                for K in range(Activations.shape[0]):
-                        self.nodes[I][J].belief[K,0] = max(0, (Activations[K,0] - 0.025))
+                Image = return_node_input(input_, [I*4, J*4], [4,4], 'Adjacent', 'Color')
+                activations = np.dot(W, np.transpose(Image))
+                activations = activations/sum(sum(activations))
+                self.nodes[I][J].Activation = activations
+                m = np.mean(np.mean(activations,1))
+                for K in range(activations.shape[0]):
+                        self.nodes[I][J].belief[K,0] = max(0, (activations[K,0] - 0.025))
                 print self.nodes[0][0].belief"""
+            """
+                def produce_belief(self, sqdiff):
+        """
+        # Update belief state.
+        """
+        normdist = np.sum(sqdiff / self.var, axis=1)
+        chk = (normdist == 0)
+        if any(chk):
+            self.belief = np.zeros((1, self.CENTS))
+            self.belief[chk] = 1.0
+        else:
+            normdist = 1 / normdist
+            self.belief = (normdist / sum(normdist)).reshape(1, self.CENTS)
+
+            """
