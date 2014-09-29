@@ -1,8 +1,8 @@
 __author__ = 'teddy'
+import cPickle as pickle
 from Network import *
 from loadData import *
-from time import time
-import cPickle as pickle
+
 
 """
 Here I don't move the image, I rather let a typical node move around the image
@@ -52,16 +52,13 @@ DESTIN = Network(
 DESTIN.setmode(network_mode)
 DESTIN.set_lowest_layer(0)
 # Load Data
-[data, labels] = loadCifar(10)  # loads cifar_data_batch_1
+[data, labels] = loadCifar(10)
 del labels
 # data = np.random.rand(5,32*32*3)
 # Initialize Network; there is is also a layer-wise initialization option
 DESTIN.init_network()
-t = time()
 for I in range(data.shape[0]):  # For Every image in the data set
     if I % 200 == 0:
-        print time() - t
-        t = time()
         print("Training Iteration Number %d" % I)
     for L in range(DESTIN.number_of_layers):
         if L == 0:
@@ -82,13 +79,12 @@ for I in range(data.shape[0]):  # For Every image in the data set
 print("Testing Started")
 network_mode = False
 DESTIN.setmode(network_mode)
+
 # On the training set
 [data, labels] = loadCifar(10)
 del labels
 for I in range(data.shape[0]):  # For Every image in the data set
     if I % 1000 == 0:
-        print time() - t
-        t = time()
         print("Testing Iteration Number %d" % I)
     for L in range(DESTIN.number_of_layers):
         if L == 0:
@@ -107,10 +103,10 @@ for I in range(data.shape[0]):  # For Every image in the data set
         file_id.close()
         # Get rid-off accumulated training beliefs
         DESTIN.clean_belief_exporter()
-# On the test set
+
 [data, labels] = loadCifar(6)
-# data = np.random.rand(5,32*32*3)
 del labels
+# On the test set
 for I in range(data.shape[0]):  # For Every image in the data set
     if I % 1000 == 0:
         print("Testing Iteration Number %d" % (I+50000))

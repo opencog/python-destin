@@ -26,7 +26,6 @@ class NNSAE:
         self.b = -3 * np.ones((hid_dim, 1))
         # learning rate for synaptic plasticity of read-out layer (RO)
         self.lrateRO = 0.01
-        # 0.0001 * (2 / (3 * lnum))  #numerical regularization constant
         self.regRO = 0.0002
         self.decayP = 0  # decay factor for positive weights [0..1]
         self.decayN = 1  # decay factor for negative weights [0..1]
@@ -99,6 +98,7 @@ class NNSAE:
 
     def update(self):
         self.g = np.dot(self.W.transpose(), self.inp)
+
         # Apply activation function
         self.h = float(1) / (1 + np.exp(-self.a * self.g - self.b))
 
