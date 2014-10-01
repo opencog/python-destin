@@ -2,7 +2,7 @@
 __author__ = 'teddy'
 import scipy.io as io
 
-from Layer import *
+from layer import *
 
 # io.savemat(file_name,Dict,True)
 # TODO: get ridoff the sequential requirements like first feed the layer

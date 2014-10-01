@@ -3,8 +3,8 @@
 Created on Tue Jul  3 2014
 @author: teddy
 """
-from Node import *
-from loadData import *
+from node import *
+from load_data import *
 class Layer:
     def __init__(self, layer_num, number_of_nodes, patch_mode=None, image_type=None):
         self.patch_mode = patch_mode
