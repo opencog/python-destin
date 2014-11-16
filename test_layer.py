@@ -12,8 +12,8 @@ import theano.tensor as T
 
 rng = np.random
 from learning_algorithm import *
-from Node import *
-from Layer import *
+from node import *
+from layer import *
 
 
 def main():
