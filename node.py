@@ -4,8 +4,8 @@ Created on Tue Jul  2 2014
 @author: teddy
 """
 
-from Clustering import *
-from AutoEncoder import *
+from clustering import *
+from auto_encoder import *
 
 
 class Node:

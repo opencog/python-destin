@@ -1,7 +1,5 @@
 __author__ = 'teddy'
-from time import time
 import cPickle as pickle
-
 from network import *
 from load_data import *
 
@@ -35,12 +33,12 @@ alg_params = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [],
 # '''
 #  ******************************************************************************************
 
-#           Hierarchy Of auto_encoders
+#           Hierarchy Of AutoEncoders
 
-print "Uniform DeSTIN with auto_encoders"
+print "Uniform DeSTIN with AutoEncoders"
 num_nodes_per_layer = [[8, 8], [4, 4], [2, 2], [1, 1]]
 num_cents_per_layer = [25, 25, 25, 25]
-algorithm_choice = 'auto_encoder'
+algorithm_choice = 'AutoEncoder'
 inp_size = 48
 hid_size = 100
 alg_params = [[inp_size, hid_size], [4 * hid_size, hid_size],
@@ -54,16 +52,13 @@ DESTIN = Network(
 DESTIN.setmode(network_mode)
 DESTIN.set_lowest_layer(0)
 # Load Data
-[data, labels] = loadCifar(10)  # loads cifar_data_batch_1
+[data, labels] = loadCifar(10)
 del labels
 # data = np.random.rand(5,32*32*3)
 # Initialize Network; there is is also a layer-wise initialization option
 DESTIN.init_network()
-t = time()
 for I in range(data.shape[0]):  # For Every image in the data set
-    if I % 1 == 0:
-        print time() - t
-        t = time()
+    if I % 200 == 0:
         print("Training Iteration Number %d" % I)
     for L in range(DESTIN.number_of_layers):
         if L == 0:
@@ -84,13 +79,12 @@ for I in range(data.shape[0]):  # For Every image in the data set
 print("Testing Started")
 network_mode = False
 DESTIN.setmode(network_mode)
+
 # On the training set
 [data, labels] = loadCifar(10)
 del labels
 for I in range(data.shape[0]):  # For Every image in the data set
     if I % 1000 == 0:
-        print time() - t
-        t = time()
         print("Testing Iteration Number %d" % I)
     for L in range(DESTIN.number_of_layers):
         if L == 0:
@@ -109,10 +103,10 @@ for I in range(data.shape[0]):  # For Every image in the data set
         file_id.close()
         # Get rid-off accumulated training beliefs
         DESTIN.clean_belief_exporter()
-# On the test set
+
 [data, labels] = loadCifar(6)
-# data = np.random.rand(5,32*32*3)
 del labels
+# On the test set
 for I in range(data.shape[0]):  # For Every image in the data set
     if I % 1000 == 0:
         print("Testing Iteration Number %d" % (I+50000))
