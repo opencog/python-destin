@@ -1,9 +1,12 @@
 __author__ = 'teddy'
 # imports
 import cPickle as pickle
-from sklearn import svm
-from loadData import *
 import scipy.io as io
+
+from sklearn import svm
+
+from load_data import *
+
 
 # Loading Training and Testing Labels from cifar data set
 print("Loading training and test labels")

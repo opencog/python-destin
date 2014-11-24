@@ -1,8 +1,10 @@
 import numpy.random as rng
-import numpy as np
+
 import theano
-from Network import *
-from Node import *
+
+from network import *
+from node import *
+
 
 # self,num_layers,alg_choice,alg_params,num_nodes_per_layer,patch_mode='Adjacent',image_type='Color'
 num_layers = 4

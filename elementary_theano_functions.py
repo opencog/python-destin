@@ -1,7 +1,6 @@
 __author__ = 'teddy'
 from theano import function
 import theano.tensor as T
-import numpy as np
 #  Implements basic operatioons needed by Learning Algorithms
 #  Matrix-Matrix Addition, Division, Subtraction, Multiplication
 #  Mat-Mat

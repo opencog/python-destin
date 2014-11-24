@@ -1,8 +1,10 @@
 __author__ = 'teddy'
-from Network import *
-from loadData import *
 from time import time
 import cPickle as pickle
+
+from network import *
+from load_data import *
+
 
 """
 Here I don't move the image, I rather let a typical node move around the image
@@ -33,12 +35,12 @@ alg_params = {'mr': 0.01, 'vr': 0.01, 'sr': 0.001, 'DIMS': [],
 # '''
 #  ******************************************************************************************
 
-#           Hierarchy Of AutoEncoders
+#           Hierarchy Of auto_encoders
 
-print "Uniform DeSTIN with AutoEncoders"
+print "Uniform DeSTIN with auto_encoders"
 num_nodes_per_layer = [[8, 8], [4, 4], [2, 2], [1, 1]]
 num_cents_per_layer = [25, 25, 25, 25]
-algorithm_choice = 'AutoEncoder'
+algorithm_choice = 'auto_encoder'
 inp_size = 48
 hid_size = 100
 alg_params = [[inp_size, hid_size], [4 * hid_size, hid_size],
@@ -59,7 +61,7 @@ del labels
 DESTIN.init_network()
 t = time()
 for I in range(data.shape[0]):  # For Every image in the data set
-    if I % 200 == 0:
+    if I % 1 == 0:
         print time() - t
         t = time()
         print("Training Iteration Number %d" % I)

@@ -1,8 +1,10 @@
 __author__ = 'teddy'
-from Network import *
-from loadData import *
 import cPickle as pickle
 from time import time
+
+from network import *
+from load_data import *
+
 
 num_layers = 4
 num_nodes_per_layer = [[8, 8], [4, 4], [2, 2], [1, 1]]
