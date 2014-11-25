@@ -1,23 +1,21 @@
 PythonDeSTIN is a repo for the development of Python DeSTIN (PyDeSTIN).
 As a starting point:
-	-> here I have developed a Node and Learning Algorithm Classes
-		- Just to get a sense og Learning Algorithm inside a node.
-		  I put a LogisticRegression implemented in theano 
-	-> learning_algorithm Class is placed as attribute of the Node class.
-	-> learning_algorithm Object does the actual learning for the node.
-The whole PyDeSTIN will have Four Classes: learning_algorithm, Node, Layer and Network
+
+The PyDeSTIN will have Four Classes: learning_algorithm, Node, Layer and Network
 The Classes will be placed in a nested fashion as follows:
 -> Network
-     Layer
-    	Node
-	      learning_algorithm
+-> Layer
+-> Node
+-> learning_algorithm
+
 Installation Instructions:
 -> Clone the repo by running
-    git clone https://github.com/tedyhabtegebrial/PythonDeSTIN.git
+git clone https://github.com/tedyhabtegebrial/PythonDeSTIN.git
 
 -> Downoad Cifar dataset for training and testing 
-    Available at http://www.cs.toronto.edu/~kriz/cifar.html
-    Download the python version
+Available at http://www.cs.toronto.edu/~kriz/cifar.html
+Download the python version
+
 -> Edit loadData.py to modify the location of the Cifar directory/ where you placed the downloaded cifar dataset
 -> run testDestin.py
 _______________________________ Nessesary Libraries
