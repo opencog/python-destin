@@ -1,5 +1,5 @@
 import numpy.random as rng
-import numpy as np
+
 import theano
 from network import *
 from node import *

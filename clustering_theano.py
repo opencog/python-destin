@@ -1,10 +1,11 @@
 __author__ = 'teddy'
 # Steven's incremental clustering re-implemented in Theano
-import theano
-import theano.tensor as T
 from time import time
 import math
-import numpy as np
+
+import theano
+import theano.tensor as T
+
 # implementing sample Theano functions
 
 '''

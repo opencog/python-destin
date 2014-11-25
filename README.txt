@@ -38,7 +38,7 @@ We will have explicit branches for A to D.
 
 A) pure DeSTIN Framework: flexible enough to support different learning algorithms (Done)
 		
-B) Implemeting Online-NonNegative Sparse AutoEncoder in theano/or python (Done)
+B) Implemeting Online-NonNegative Sparse auto_encoder in theano/or python (Done)
 		
 C) Implemeting Stable Incremental K Means Clustering in theano (In Progress)
 

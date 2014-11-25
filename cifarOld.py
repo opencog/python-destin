@@ -2,7 +2,6 @@
 
 from numpy import *
 import cPickle
-import scipy.io as io
 from random import randrange
 
 def read_cifar_file(fn):

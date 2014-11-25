@@ -3,16 +3,9 @@
 Created on Tue Jul  2 2014
 @author: teddy
 """
-import numpy as np
-import scipy.io as io
-from random import randrange
 import theano
-from theano import function
-import theano.tensor as T
 
 rng = np.random
-from learning_algorithm import *
-from node import *
 from layer import *
 
 
