@@ -1,5 +1,5 @@
 PythonDeSTIN is a repo for the development of Python DeSTIN (PyDeSTIN).
-As a starting point: 
+As a starting point:
 	-> here I have developed a Node and Learning Algorithm Classes
 		- Just to get a sense og Learning Algorithm inside a node.
 		  I put a LogisticRegression implemented in theano 
@@ -14,8 +14,7 @@ The Classes will be placed in a nested fashion as follows:
 Installation Instructions:
 -> Clone the repo by running
     git clone https://github.com/tedyhabtegebrial/PythonDeSTIN.git
--> checkout to the UniformDeSTIN
-    git checkout UniformDeSTIN
+
 -> Downoad Cifar dataset for training and testing 
     Available at http://www.cs.toronto.edu/~kriz/cifar.html
     Download the python version
