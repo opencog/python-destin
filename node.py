@@ -10,7 +10,7 @@ from auto_encoder import *
 
 class Node:
 
-    def __init__(self, layer_number, node_pos, cifar_stat={'patch_mean': [], 'patch_std': [], 'whiten_mat': []}):
+    def __init__(self, layer_number, node_pos, cifar_stat):
         self.layer_number = layer_number
         self.node_position = node_pos
         self.belief = []

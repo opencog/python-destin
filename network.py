@@ -24,7 +24,6 @@ class Network():
         self.number_of_nodesPerLayer = num_nodes_per_layer
         self.patch_mode = patch_mode
         self.image_type = image_type
-	cifar_stat = load_cifar(4)
         self.layers = [
             [Layer(j, num_nodes_per_layer[j], cifar_stat, self.patch_mode, self.image_type) for j in range(num_layers)]]
 
