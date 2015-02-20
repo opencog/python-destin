@@ -6,7 +6,7 @@ Created on Tue Jul  3 2014
 from node import *
 from load_data import *
 class Layer:
-    def __init__(self, layer_num, number_of_nodes, patch_mode=None, image_type=None):
+    def __init__(self, layer_num, number_of_nodes, cifar_stat, patch_mode=None, image_type=None):
         self.patch_mode = patch_mode
         self.image_type = image_type
         self.layer_number = layer_num
@@ -14,7 +14,7 @@ class Layer:
         Row = number_of_nodes[0]
         Col = number_of_nodes[1]
         if layer_num == 0:
-            nodes = [[Node(layer_num, [i, j], load_cifar(4)) for j in range(Row)] for i in range(Col)]
+            nodes = [[Node(layer_num, [i, j], cifar_stat) for j in range(Row)] for i in range(Col)]
         else:
             nodes = [[Node(layer_num, [i, j]) for j in range(Row)] for i in range(Col)]
         self.nodes = nodes
