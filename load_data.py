@@ -3,7 +3,7 @@ from numpy import *
 import cPickle
 from random import randrange
 import numpy as np
-cifar_dir = '/home/teddy/Desktop/Cifar/'
+cifar_dir = '/home/habtegebrial/Desktop/python-destin/cifar-10-batches-py/'
 # cifar_dir = '/home/eskender/Destin/cifar-10-batches-py/'
 #  Contains loading cifar batches and
 #  feeding input to lower layer nodes
@@ -142,9 +142,8 @@ def return_node_input(input_, Position, Ratio, mode, image_type):
             PatchDepth = 3
         else:
             PatchDepth = 1
-        Patch = input_[Position[0]:Position[0] + PatchWidth, Position[1]:Position[1] + PatchHeight].reshape(1,
-                                                                                                           PatchWidth * PatchWidth * PatchDepth)
+        Patch = input_[Position[0]:Position[0] + PatchWidth, Position[1]:Position[1] + PatchHeight].reshape(1,PatchWidth * PatchWidth * PatchDepth)
     else:  # TODO Overlapping Patch could be fed to a node
         print('Overlapping Patches Are Not Implemented Yet')
-        patch = np.array([])
+        patch = np.array([0])
     return Patch
