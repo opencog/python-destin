@@ -1,6 +1,8 @@
 __author__ = 'teddy'
 
 """
+
+@note: An implementation of Non-Negative Sparse auto_encoders
 This is based on the papers:
     A. Lemme, R. F. Reinhart and J. J. Steil.
     "Online learning and generalization of parts-based image representations
@@ -14,8 +16,18 @@ import numpy.random as rand
 
 
 class NNSAE:
+    """
+    An implementation of Non-Negative Sparse auto_encoders
+    """
+    def __init__(self, 
+                 inp_dim, 
+                 hid_dim):
+        """
+        Initialise a NNSAE
 
-    def __init__(self, inp_dim, hid_dim):
+        @param inp_dim: number of input neurons
+        @param hid_dim: number of hidden neurons
+        """
         self.inp_dim = inp_dim  # number of input neurons (and output neurons)
         self.hid_dim = hid_dim  # number of hidden neurons
         self.inp = np.zeros((inp_dim, 1))  # vector holding current input
