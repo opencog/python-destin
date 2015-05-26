@@ -162,7 +162,7 @@ class Layer(object):
 
 
 		  	"""
-			if self.check_gpu():
+			if theano.config.device!="cpu":
 				input=feature_maps
 				input_shuffled = input.dimshuffle(1, 2, 3, 0) # bc01 to c01b
 				filters_shuffled = filters.dimshuffle(1, 2, 3, 0) # bc01 to c01b
@@ -197,19 +197,6 @@ class Layer(object):
 				pooled_out=conv_out
 
 			return pooled_out, pooled_out+bias.dimshuffle("x", 0, "x", "x")
-
-		def check_gpu(self):
-			"""
-			Checking if GPU is available
-			"""
-			vlen = 10 * 30 * 768  # 10 x #cores x # threads per core
-
-			rng = numpy.random.RandomState(22)
-			x = shared(numpy.asarray(rng.rand(vlen), config.floatX))
-			f = function([], T.exp(x))
-			if numpy.any([isinstance(x.op, T.Elemwise) for x in f.maker.fgraph.toposort()]):
-			    return False
-			return True
 		
 		def get_activation(self,
 		                   pooled_out):
