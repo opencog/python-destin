@@ -115,27 +115,27 @@ class ConvLayer(object):
 			pool_size=(2,2),
 			border_mode="valid"):
 		"""
-    	Convolution operation in this version is not as powerful as using dnn_conv
-    	"""
-    	output=conv.conv2d(input=input,
-             		   filters=filters, 
-                  	   image_shape=image_shape,
-                   	   filter_shape=filter_shape,
-                           border_mode=border_mode,
-                           subsample=subsample)
-    	
-    	if self.tied_biases:
-      	  	pooled_out+=bias.dimshuffle("x", 0, "x", "x")
-      	else:
-      		pooled_out+=bias.dimshuffle('x', 0, 1, 2)
-      	"""
-      	TODO : Replace this pool part with separate classes that offers other kinds of pooling
-      	"""
-        if pool==True:
-         	pooled_out=downsample.max_pool_2d(input=output, ds=pool_size)
-    	else:
-      		pooled_out=output      		
-      	return pooled_out   
+	    	Convolution operation in this version is not as powerful as using dnn_conv
+	    	"""
+	    	output=conv.conv2d(input=input,
+	             		   filters=filters, 
+	                  	   image_shape=image_shape,
+	                   	   filter_shape=filter_shape,
+	                           border_mode=border_mode,
+	                           subsample=subsample)
+	    	
+	    	if self.tied_biases:
+	      	  	pooled_out+=bias.dimshuffle("x", 0, "x", "x")
+	      	else:
+	      		pooled_out+=bias.dimshuffle('x', 0, 1, 2)
+	      	"""
+	      	TODO : Replace this pool part with separate classes that offers other kinds of pooling
+	      	"""
+	        if pool==True:
+	         	pooled_out=downsample.max_pool_2d(input=output, ds=pool_size)
+	    	else:
+	      		pooled_out=output      		
+	      	return pooled_out   
       
       
 	def get_activation(self, pooled_out):
