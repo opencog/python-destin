@@ -137,3 +137,23 @@ class Layer(object):
   def params(self, param_list):
     self.W.set_value(param_list[0].get_value())
     self.b.set_value(param_list[1].get_value())
+    
+  def get_dim(self, name):
+        """
+        Get dimension of an input/output variable.
+        
+        @param name: The name of the variable (str)
+        """
+        raise ValueError("No dimension information for {} available"
+                         .format(name))
+
+  def get_dims(self, names):
+        """
+        Get list of dimensions for a set of input/output variables.
+        
+        @param names: The name of the variable (list of strings)
+
+        @return: The dimensions of the sources (list)              
+            
+        """
+        return [self.get_dim(name) for name in names]

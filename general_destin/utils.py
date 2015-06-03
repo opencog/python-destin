@@ -41,11 +41,11 @@ def get_shared_matrix(name,
             lower_bound=0
             upper_bound=1./(in_size+out_size)
         return theano.shared(value=np.asarray(np.random.uniform(low=lower_bound,
-                                                            high=upper_bound,
-                                                            size=(in_size, out_size)),
-                                                            dtype="float32"),
-                                                            name=name,
-                                                            borrow=True)
+                                                                high=upper_bound,
+                                                                size=(in_size, out_size)),
+                                                                dtype="float32"),
+                                                                name=name,
+                                                                borrow=True)
 
 def Dropout(shape, prob):
     pass

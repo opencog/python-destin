@@ -61,7 +61,8 @@ class ConvLayer(Layer):
 		                    "valid" for valid convolution
 		                    "full" for full convolution (string)  
 		"""
-		super(ConvLayer, self).__init__(filter_shape[1], filter_shape[0], **kwargs)
+		
+
 		self.rng=rng
 		self.layer_number=layer_num
 		self.in_feature_maps=feature_maps
