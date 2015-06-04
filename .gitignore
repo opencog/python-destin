@@ -7,3 +7,5 @@ testFiles/
 test/
 train/
 docs/
+.project
+.pydevproject
