@@ -58,7 +58,6 @@ class ConvLayer(object):
 						    Note that untied biases train much faster.
 						    The tradeoff is between tied biases leading to underfitting and untied biases leading to overfitting
 		"""
-		self.rng=rng
 		self.layer_number=layer_num
 		self.input=input
 		self.image_shape=image_shape
@@ -68,6 +67,8 @@ class ConvLayer(object):
 		self.stride=stride
 		self.border_mode=border_mode
 		self.tied_biases=tied_biases
+		#randomly chosen seed
+		self.rng=np.random.RandomState(23455)
 		
 		# configure activation
 		if (self.activation_mode=="tanh"):
@@ -87,6 +88,10 @@ class ConvLayer(object):
 	def initialize(self):
 		"""
 		Set values for weights and biases
+		
+		@note 
+		Weights are sampled randomly from a uniform distribution in the range [-1/fan-in, 1/fan-in], 
+		where fan-in is the number of inputs to a hidden unit.
 		"""
 		# generate weights and bias
 		# There are (number of input feature maps * filter height * filter width) inputs to each hidden layer
@@ -171,9 +176,128 @@ class ConvLayer(object):
 	 	------------------------------------------------
 		@return dimensions of the variable
 		"""
-    	raise ValueError("No dimension information for {} available"
-						.format(name))
+		if name=="output":
+			return self.output.shape
+		elif name=="W":
+			return self.W.shape
+		elif name=="b":
+			return self.b.shape
+		elif name=="input":
+			# input dims are same as that of image_shape
+			return self.image_shape.shape
+		else:
+			raise ValueError("No dimension information for {} available"
+							.format(name))
 
+	def get_dims(self, names):
+		"""
+		Get list of dimensions for a set of input/output variables.
+		
+		@param names: list of names of the variables (list)
+		---------------------------------------------------
+		@return list of dimensions of each of the variables		 
+		"""
+		return [self.get_dim(name) for name in names]
+	
 	@property
 	def params(self):
 		return (self.W, self.b)
+
+
+class ConvLayerFilterActs(ConvLayer):
+	"""
+	This class implements a general layer of ConvNet using FilterActs wrapper from pylearn2 sandbox
+	"""
+	def __init__(self,
+			     image_shape,
+			     filter_shape,
+			     pool=False,
+			     pool_size=(2,2),
+			     activation_mode="tanh",
+			     stride=(1, 1),
+			     border_mode="valid",
+                 tied_biases=False):
+		"""
+		Initialise the ConvNet Layer
+
+		@param rng: random number generator for initializing weights (numpy.random.RandomState)
+		@param input: symbolic tensor of shape image_shape (theano.tensor.dtensor4)
+		@param image_shape: (batch size, number of input feature maps,image height, image width) (tuple or list of length 4)
+		@param filter_shape: (number of filters, number of input feature maps, filter height, filter width) (tuple or list of length 4)
+		@param pool: indicates if there is a max-pooling process in the layer. Defaults to False. (bool)
+		@param pool_size: the pooling factor (#rows, #cols) (tuple or list of length 2)
+		@param activation_mode: activation mode,
+								"tanh" for tanh function
+								"relu" for ReLU function
+								"sigmoid" for Sigmoid function
+								"softplus" for Softplus function
+								"linear" for linear function (string)
+		@param stride: 	the number of shifts over rows/cols to get the the next pool region. 
+	                    if st is None, it is considered equal to ds (no overlap on pooling regions) (tuple of size 2) 
+	                    The step (or stride) with which to slide the filters over the image. Defaults to (1, 1).
+		@param border_mode: convolution mode
+		                    "valid" for valid convolution
+		                    "full" for full convolution (string)  
+        @param tied_biases: one single bias per feature map (bool)
+						    Note that untied biases train much faster.
+						    The tradeoff is between tied biases leading to underfitting and untied biases leading to overfitting
+		"""
+		super(ConvLayerFilterActs, self).__init__(image_shape, filter_shape, pool, pool_size, 
+												  activation_mode, stride, border_mode, tied_biases)
+	
+	def apply_conv(self, input):
+		"""
+		This method applies the convolution operation on the input provided
+	
+    	@note Convolution operation in this version is not as powerful as using dnn_conv
+    	
+    	@param input: symbolic tensor of shape image_shape (theano.tensor.dtensor4)
+    			      A 4D tensor with the axes representing batch size, number of
+       			      channels, image height, and image width.
+     	----------------------------------------------------------------------------------
+		@return output : A 4D tensor of filtered images (feature maps) with dimensions
+			            representing batch size, number of filters, feature map height,
+			            and feature map width.
+			
+			            The height and width of the feature map depend on the border
+			            mode. For 'valid' it is ``image_size - filter_size + 1`` while
+			            for 'full' it is ``image_size + filter_size - 1``
+	    ----------------------------------------------------------------------------------
+		Limitations of using FilterActs compared to conv2d:
+
+	 	> Number of channels <= 3; If you want to compute the gradient, it should be divisible by 4.
+	 	> Filters must be square.
+	 	> Number of filters must be a multiple of 16
+	 	> All minibatch sizes are supported, but the best performance is achieved when the minibatch size 
+	 	is a multiple of 128.
+	 	> Works only on the GPU
+    	"""
+		input_shuffled = input.dimshuffle(1, 2, 3, 0) # bc01 to c01b
+		filters_shuffled = self.W.dimshuffle(1, 2, 3, 0) # bc01 to c01b
+		## Use zero padding with (filter_size - 1) border i.e. full convolution
+		if self.border_mode=="full":
+			padding=self.filter_shape[0]-1
+		else:
+			padding=0
+		conv_out = FilterActs(stride=1, partial_sum=1, pad=padding)
+		contiguous_input = gpu_contiguous(input_shuffled)
+		contiguous_filters = gpu_contiguous(filters_shuffled)
+		conv_out_shuffled = conv_out(contiguous_input, contiguous_filters)
+		if pool==True:
+			pool_op = MaxPool(ds=pool_size[0], stride=pool_size[0])
+			pooled_out_shuffled = pool_op(conv_out_shuffled)
+			pooled_out = pooled_out_shuffled.dimshuffle(3, 0, 1, 2) # c01b to bc01
+			pooled_out=downsample.max_pool_2d(input=conv_out,
+			              					  ds=pool_size)
+		else:
+			pooled_out=conv_out
+		
+		self.output=pooled_out
+		
+    	if self.tied_biases:
+      	  	self.output+=self.b.dimshuffle("x", 0, "x", "x")
+      	else:
+      		self.output+=self.b.dimshuffle('x', 0, 1, 2)
+      		
+		
+		return pooled_out
