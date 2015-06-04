@@ -215,6 +215,8 @@ class ConvLayerFilterActs(ConvLayer):
                  tied_biases=False):
 		"""
 		Initialise the ConvNet Layer
+		
+		@note: Supports only max pooling for now
 
 		@param rng: random number generator for initializing weights (numpy.random.RandomState)
 		@param input: symbolic tensor of shape image_shape (theano.tensor.dtensor4)
