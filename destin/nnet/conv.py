@@ -14,11 +14,17 @@ import theano
 import theano.tensor as T
 from theano.tensor.signal import downsample
 from theano.tensor.nnet import conv
-from pylearn2.sandbox.cuda_convnet.filter_acts import FilterActs
 from theano.sandbox.cuda.basic_ops import gpu_contiguous
-from pylearn2.sandbox.cuda_convnet.pool import MaxPool
+
+try:
+	from pylearn2.sandbox.cuda_convnet.filter_acts import FilterActs
+	from pylearn2.sandbox.cuda_convnet.pool import MaxPool
+except ImportError:
+    print "Note: pylearn2 not available, FilterActs cannot be used"
+    pylearn2=None
 
 import general_destin.nnfuns as nnf 
+from pipes import stepkinds
 
 class ConvLayer(object):
 	"""
@@ -28,7 +34,7 @@ class ConvLayer(object):
 			     image_shape,
 			     filter_shape,
 			     pool=False,
-			     pool_size=(2,2),
+			     pool_size=(1,1),
 			     activation_mode="tanh",
 			     stride=(1, 1),
 			     border_mode="valid",
@@ -143,11 +149,11 @@ class ConvLayer(object):
       	  	self.output+=self.b.dimshuffle("x", 0, "x", "x")
       	else:
       		self.output+=self.b.dimshuffle('x', 0, 1, 2)
-      	"""
-      	TODO : Replace this pool part with separate classes that offers other kinds of pooling
-      	"""
+      		
         if pool==True:
-         	self.output=downsample.max_pool_2d(input=output, ds=pool_size)
+        	self.pooling=MaxPooling(self.pool_size, self.stride)
+         	self.output=self.pooling.apply(output)
+         	
       	return self.output   
       
 	def apply_activation(self, pre_activation):
@@ -176,17 +182,7 @@ class ConvLayer(object):
 	 	------------------------------------------------
 		@return dimensions of the variable
 		"""
-		if name=="output":
-			return self.output.shape
-		elif name=="W":
-			return self.W.shape
-		elif name=="b":
-			return self.b.shape
-		elif name=="input":
-			# input dims are same as that of image_shape
-			return self.image_shape.shape
-		else:
-			raise ValueError("No dimension information for {} available"
+		raise ValueError("No dimension information for {} available"
 							.format(name))
 
 	def get_dims(self, names):
@@ -212,7 +208,7 @@ class ConvLayerFilterActs(ConvLayer):
 			     image_shape,
 			     filter_shape,
 			     pool=False,
-			     pool_size=(2,2),
+			     pool_size=(1,1),
 			     activation_mode="tanh",
 			     stride=(1, 1),
 			     border_mode="valid",
@@ -242,6 +238,8 @@ class ConvLayerFilterActs(ConvLayer):
 						    Note that untied biases train much faster.
 						    The tradeoff is between tied biases leading to underfitting and untied biases leading to overfitting
 		"""
+		if pylearn2 is None:
+			raise ImportError("Note: pylearn2 not available, FilterActs cannot be used")
 		super(ConvLayerFilterActs, self).__init__(image_shape, filter_shape, pool, pool_size, 
 												  activation_mode, stride, border_mode, tied_biases)
 	
@@ -272,21 +270,21 @@ class ConvLayerFilterActs(ConvLayer):
 	 	is a multiple of 128.
 	 	> Works only on the GPU
     	"""
-		input_shuffled = input.dimshuffle(1, 2, 3, 0) # bc01 to c01b
-		filters_shuffled = self.W.dimshuffle(1, 2, 3, 0) # bc01 to c01b
+		input_shuffled=input.dimshuffle(1, 2, 3, 0) # bc01 to c01b
+		filters_shuffled=self.W.dimshuffle(1, 2, 3, 0) # bc01 to c01b
 		## Use zero padding with (filter_size - 1) border i.e. full convolution
 		if self.border_mode=="full":
 			padding=self.filter_shape[0]-1
 		else:
 			padding=0
-		conv_out = FilterActs(stride=1, partial_sum=1, pad=padding)
-		contiguous_input = gpu_contiguous(input_shuffled)
-		contiguous_filters = gpu_contiguous(filters_shuffled)
-		conv_out_shuffled = conv_out(contiguous_input, contiguous_filters)
+		conv_out=FilterActs(stride=1, partial_sum=1, pad=padding)
+		contiguous_input=gpu_contiguous(input_shuffled)
+		contiguous_filters=gpu_contiguous(filters_shuffled)
+		conv_out_shuffled=conv_out(contiguous_input, contiguous_filters)
 		if pool==True:
-			pool_op = MaxPool(ds=pool_size[0], stride=pool_size[0])
-			pooled_out_shuffled = pool_op(conv_out_shuffled)
-			pooled_out = pooled_out_shuffled.dimshuffle(3, 0, 1, 2) # c01b to bc01
+			pool_op=MaxPool(ds=pool_size[0], stride=pool_size[0])
+			pooled_out_shuffled=pool_op(conv_out_shuffled)
+			pooled_out=pooled_out_shuffled.dimshuffle(3, 0, 1, 2) # c01b to bc01
 			pooled_out=downsample.max_pool_2d(input=conv_out,
 			              					  ds=pool_size)
 		else:
@@ -299,5 +297,79 @@ class ConvLayerFilterActs(ConvLayer):
       	else:
       		self.output+=self.b.dimshuffle('x', 0, 1, 2)
       		
+		return self.output
+
+
+class MaxPooling(object):
+	"""
+	This class performs Max Pooling
+	"""
+	def __init__(self,
+				 pooling_size,
+				 stride=None):
+		"""
+		@param pooling_size: The height and width of the pooling region i.e. this is the factor
+        					 by which your input's last two dimensions will be downscaled.
+		@param stride:  The vertical and horizontal shift (stride) between pooling regions.
+				        By default this is (1,1) i.e. same as pool_size. 
+				        Setting this to a lower value than pool_size results in overlapping pooling regions.
+		"""
+        self.pooling_size=pooling_size
+        self.stride=stride
+        
+	def apply(self, input):
+		"""
+		Apply the pooling (subsampling) transformation.
 		
-		return pooled_out
+		@param input: An tensor with dimension greater or equal to 2. The last two
+		              dimensions will be downsampled. For example, with images this
+		              means that the last two dimensions should represent the height
+		              and width of your image.
+		"""
+		pooled_output=max_pool_2d(input, self.pooling_size, st=self.stride)
+        return pooled_output
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
