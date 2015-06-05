@@ -23,7 +23,7 @@ except ImportError:
     print "Note: pylearn2 not available, FilterActs cannot be used"
     pylearn2=None
 
-import general_destin.nnfuns as nnf 
+import nnfuns as nnf 
 from pipes import stepkinds
 
 class ConvLayer(object):
