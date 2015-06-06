@@ -17,8 +17,8 @@ from theano.tensor.nnet import conv
 from theano.sandbox.cuda.basic_ops import gpu_contiguous
 
 try:
-	from pylearn2.sandbox.cuda_convnet.filter_acts import FilterActs
-	from pylearn2.sandbox.cuda_convnet.pool import MaxPool
+    from pylearn2.sandbox.cuda_convnet.filter_acts import FilterActs
+    from pylearn2.sandbox.cuda_convnet.pool import MaxPool
 except ImportError:
     print "Note: pylearn2 not available, FilterActs cannot be used"
     pylearn2=None
@@ -31,14 +31,14 @@ class ConvLayer(object):
 	This class implements a general layer of a Convolutional Neural Network
 	"""
 	def __init__(self,
-			     image_shape,
-			     filter_shape,
-			     pool=False,
-			     pool_size=(1,1),
-			     activation_mode="tanh",
-			     stride=(1, 1),
-			     border_mode="valid",
-                 tied_biases=False):
+				image_shape,
+				filter_shape,
+				pool=False,
+				pool_size=(1,1),
+				activation_mode="tanh",
+				stride=(1, 1),
+				border_mode="valid",
+				tied_biases=False):
 		"""
 		Initialise the ConvNet Layer
 
@@ -330,48 +330,3 @@ class MaxPooling(object):
 		"""
 		pooled_output=max_pool_2d(input, self.pooling_size, st=self.stride)
         return pooled_output
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
