@@ -75,7 +75,7 @@ class ConvLayer(object):
         self.tied_biases=tied_biases
         #randomly chosen seed
         self.rng=np.random.RandomState(23455)
-		
+
         # configure activation
         if (self.activation_mode=="tanh"):
             self.activation=nnf.tanh
@@ -90,11 +90,11 @@ class ConvLayer(object):
         else:
             raise ValueError("Value %s is not a valid choice of activation function"
                              % self.activation_mode)
-	
+
     def initialize(self):
         """
         Set values for weights and biases
-		
+
         @note 
         Weights are sampled randomly from a uniform distribution in the range [-1/fan-in, 1/fan-in], 
         where fan-in is the number of inputs to a hidden unit.
@@ -119,8 +119,7 @@ class ConvLayer(object):
         # These two would be assigned only when called
         self.output=None
         self.feature_maps=None
-				
-	
+
     def apply_conv(self, input):
         """
         This method applies the convolution operation on the input provided
@@ -149,13 +148,13 @@ class ConvLayer(object):
             self.output+=self.b.dimshuffle("x", 0, "x", "x")
         else:
             self.output+=self.b.dimshuffle('x', 0, 1, 2)
-      		
-        if pool==True:
+
+        if self.pool==True:
             self.pooling=MaxPooling(self.pool_size, self.stride)
             self.output=self.pooling.apply(self.output)
-         	
+         
         return self.output   
-      
+
     def apply_activation(self, pre_activation):
         """
         Apply activation on pre-activation input
@@ -167,10 +166,10 @@ class ConvLayer(object):
         """
         self.feature_maps=self.activation(pre_activation)
         return self.feature_maps
-		 
+
     def get_feature_maps(self):
         return self.feature_maps
-	
+
     def get_output(self, x):
         return self.output
 
@@ -223,7 +222,7 @@ class ConvLayerFilterActs(ConvLayer):
             raise ImportError("Note: pylearn2 not available, FilterActs cannot be used")
         super(ConvLayerFilterActs, self).__init__(image_shape, filter_shape, pool, pool_size, 
                                                   activation_mode, stride, border_mode, tied_biases)
-	
+
     def apply_conv(self, input):
         """
         This method applies the convolution operation on the input provided
@@ -262,15 +261,15 @@ class ConvLayerFilterActs(ConvLayer):
         contiguous_input=gpu_contiguous(input_shuffled)
         contiguous_filters=gpu_contiguous(filters_shuffled)
         conv_out_shuffled=conv_out(contiguous_input, contiguous_filters)
-        if pool==True:
-            pool_op=MaxPool(ds=pool_size[0], stride=pool_size[0])
+        if self.pool==True:
+            pool_op=MaxPool(ds=self.pool_size[0], stride=self.pool_size[0])
             pooled_out_shuffled=pool_op(conv_out_shuffled)
             pooled_out=pooled_out_shuffled.dimshuffle(3, 0, 1, 2) # c01b to bc01
-            pooled_out=downsample.max_pool_2d(input=conv_out,
-                                              ds=pool_size)
+            pooled_out=max_pool_2d(input=conv_out,
+                                   ds=self.pool_size)
         else:
             pooled_out=conv_out
-		
+
         self.output=pooled_out
         
         if self.tied_biases:
