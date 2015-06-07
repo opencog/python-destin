@@ -1,9 +1,6 @@
 __author__ = 'Steven'
 # Re-implemented in Theano at iCogLabs
 import numpy as np
-# from theano.tensor.shared_randomstreams import RandomStreams
-# from theano import function
-# import theano.tensor as T
 
 
 class Clustering:
@@ -22,6 +19,13 @@ class Clustering:
     def common_init(self, mr, vr, sr, di, ce, node_id):
         """
         Initialization function used by the base class and subclasses.
+
+        @param mr: mean rate 
+        @param vr: variance rate
+        @param sr: starvation rate
+        @param di: number of dimensions
+        @param ce: number of centroids
+        @param node_id: node id to uniquely identify node on each layer
         """
 
         self.MEANRATE = mr
@@ -45,6 +49,9 @@ class Clustering:
     def update_node(self, input_, TRAIN):
         """
         Update the node based on an input and training flag.
+
+        @param input_:
+        @param TRAIN:
         """
         input_ = input_.reshape(1, self.DIMS)
         self.process_input(input_, TRAIN)
@@ -52,6 +59,9 @@ class Clustering:
     def process_input(self, input_, TRAIN):
         """
         Node update function for base class and subclasses.
+
+        @param input_:
+        @param TRAIN:
         """
 
         # Calculate Distance
@@ -67,8 +77,10 @@ class Clustering:
         class and subclasses. Subclass should overide if
         Euclidean distance is not desired for selecting
         winning centroid.
-        """
 
+        @param diff:
+        @param sqdiff:
+        """
         euc = np.sqrt(np.sum(sqdiff, axis=1)).reshape(self.CENTS, 1)
         self.update_winner(euc, diff)
 
@@ -76,6 +88,9 @@ class Clustering:
         """
         Updates winning centroid. Subclasses should not
         need to overide this function.
+
+        @param dist:
+        @param diff:
         """
 
         # Apply starvation trace
@@ -93,6 +108,8 @@ class Clustering:
     def produce_belief(self, sqdiff):
         """
         Update belief state.
+
+        @param sqdiff:
         """
         normdist = np.sum(sqdiff / self.var, axis=1)
         chk = (normdist == 0)
@@ -106,6 +123,8 @@ class Clustering:
     def add_child(self, child):
         """
         Add child node for providing input.
+
+        @param child:
         """
 
         self.children.append(child)
@@ -113,6 +132,8 @@ class Clustering:
     def latched_update(self, TRAIN):
         """
         Update node that has children nodes.
+
+        @param TRAIN:
         """
 
         input_ = np.concatenate([c.belief for c in self.children], axis=1)
@@ -121,6 +142,10 @@ class Clustering:
     def init_whitening(self, mn=[], st=[], tr=[]):
         """
         Initialize whitening parameters.
+
+        @param mn:
+        @param st:
+        @param tr:
         """
 
         # Rescale initial means, since inputs will no longer

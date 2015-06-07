@@ -2,6 +2,8 @@
 """
 Created on Tue Jul  2 2014
 @author: teddy
+
+@note: An implementation of node of the DeSTIN architecture
 """
 
 from clustering import *
@@ -9,8 +11,20 @@ from auto_encoder import *
 
 
 class Node:
+    """
+    This class describes all nodes of the DeSTIN network
+    """
+    def __init__(self, 
+                 layer_number, 
+                 node_pos, 
+                 cifar_stat):
+        """
+        Initialize each node 
 
-    def __init__(self, layer_number, node_pos, cifar_stat):
+        @param layer_number: layer number  
+        @param node_pos: position of nodes 
+        @param cifar_stat: parameters needed for the CIFAR dataset
+        """
         self.layer_number = layer_number
         self.node_position = node_pos
         self.belief = []
@@ -21,6 +35,12 @@ class Node:
         self.v = cifar_stat['whiten_mat']
 
     def init_node_learning_params(self, algorithm_choice, alg_params):
+        """
+        Initialize learning parameters for all nodes 
+
+        @param algorithm_choice: choice of algorithm 
+        @param alg_params: Dictionary of various parameters needed for learning algorithm 
+        """
         self.algorithm_choice = algorithm_choice
         if algorithm_choice == 'Clustering':
             cents_per_layer = alg_params['num_cents_per_layer']
@@ -29,9 +49,12 @@ class Node:
                 input_width = 48
             else:
                 input_width = cents_per_layer[self.layer_number - 1] * 4
-            self.learning_algorithm = Clustering(alg_params['mr'], alg_params['vr'], alg_params['sr'], input_width,
-                                                alg_params['num_cents_per_layer'][self.layer_number], self.node_position)
-            # mr, vr, sr, di, ce, node_id
+            self.learning_algorithm = Clustering(mr=alg_params['mr'], 
+                                                 vr=alg_params['vr'], 
+                                                 sr=alg_params['sr'], 
+                                                 di=input_width,
+                                                 ce=alg_params['num_cents_per_layer'][self.layer_number], 
+                                                 node_id=self.node_position)
         else:
             self.belief = np.ones((alg_params[self.layer_number][1], 1))
             self.algorithm_choice = algorithm_choice
@@ -39,6 +62,11 @@ class Node:
                 alg_params[self.layer_number][0], alg_params[self.layer_number][1])
 
     def load_input(self, In):
+        """
+        Load all input data - image patches, and normalize them 
+
+        @param In: input data 
+        """
         if self.layer_number == 0:
             In = In - self.patch_mean
             In = In / self.patch_std
@@ -46,6 +74,11 @@ class Node:
         self.input = In
 
     def do_node_learning(self, mode):
+        """
+        Peform learning on each node 
+
+        @param mode: True indicates that the network is training
+        """
         if self.algorithm_choice == 'Clustering':
             self.learning_algorithm.update_node(self.input, mode)
             self.belief = self.learning_algorithm.belief
