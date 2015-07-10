@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../destin/')
+
 import numpy.random as rng
 
 import theano
