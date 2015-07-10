@@ -1,4 +1,6 @@
 __author__ = 'teddy'
+import sys
+sys.path.append('../destin/')
 import cPickle as pickle
 from network import *
 from load_data import *
