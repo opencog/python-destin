@@ -3,6 +3,9 @@
 Created on Tue Jul  2 2014
 @author: teddy
 """
+import sys
+sys.path.append('../destin/')
+
 import numpy as np
 import scipy.io as io
 from random import randrange
