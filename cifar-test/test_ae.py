@@ -1,4 +1,6 @@
 __author__ = 'teddy'
+import sys
+sys.path.append('../destin/')
 from AutoEncoder import *
 import scipy.io as io
 from pprint import pprint

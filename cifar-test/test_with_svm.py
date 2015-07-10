@@ -1,4 +1,6 @@
 __author__ = 'teddy'
+import sys
+sys.path.append('../destin/')
 # imports
 import cPickle as pickle
 from sklearn import svm
