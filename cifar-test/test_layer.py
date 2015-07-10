@@ -3,6 +3,8 @@
 Created on Tue Jul  2 2014
 @author: teddy
 """
+import sys
+sys.path.append('../destin/')
 import theano
 
 rng = np.random
